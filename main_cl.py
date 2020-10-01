@@ -395,7 +395,7 @@ def run(args, verbose=False):
     #------------------#
 
     # Average precision on full test set
-    output_file = open("{}/prec-{}.txt".format(args.r_dir, param_stamp), 'w')
+    output_file = open("{}/prec-{}-{}-{}.txt".format(args.r_dir, param_stamp, args.slot, args.shift), 'w')
     output_file.write('{}\n'.format(average_precs_ex if args.use_exemplars else average_precs))
     output_file.close()
     # -metrics-dict

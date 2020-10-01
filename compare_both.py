@@ -127,7 +127,8 @@ if __name__ == '__main__':
     #----- RUN ALL MODELS -----#
     #--------------------------#
 
-    seed_list = list(range(args.seed, args.seed+args.n_seeds))
+    #jd's change
+    seed_list = list(range(args.seed, args.seed+1))
 
     ###----"Re-init"----###
     args.reinit = True
