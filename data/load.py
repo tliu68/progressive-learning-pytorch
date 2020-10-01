@@ -3,9 +3,9 @@ import numpy as np
 from torchvision import transforms
 from torch.utils.data import ConcatDataset
 from data.available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
-from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, permutate_image_pixels
+from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels
 
-def get_dataset(name, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
+def get_dataset(name, shift, slot, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
                 verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
     '''Create [train|valid|test]-dataset.'''
 
@@ -22,8 +22,15 @@ def get_dataset(name, type='train', download=True, capacity=None, permutation=No
     dataset_transform = transforms.Compose(transforms_list)
 
     # load data-set
-    dataset = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), train=False if type=='test' else True,
+    dataset_train = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), train=True,
                             download=download, transform=dataset_transform, target_transform=target_transform)
+    dataset_test = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), train=False,
+                            download=download, transform=dataset_transform, target_transform=target_transform)
+
+    #JD's change
+    dataset = ConcatDataset([dataset_train, dataset_test])
+    dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
+    #############
 
     # if relevant, select "train" or "validation"-set from training-part of data
     # NOTE: this split assumes order of items in training-dataset is random!
@@ -80,7 +87,7 @@ def get_singletask_experiment(name, data_dir="./store/datasets", normalize=False
     return (trainset, testset), config
 
 
-def get_multitask_experiment(name, tasks, data_dir="./store/datasets", normalize=False, augment=False,
+def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/datasets", normalize=False, augment=False,
                              only_config=False, verbose=False, exception=False, only_test=False, max_samples=None):
     '''Load, organize and return train- and test-dataset for requested multi-task experiment.'''
 
@@ -155,13 +162,13 @@ def get_multitask_experiment(name, tasks, data_dir="./store/datasets", normalize
         classes_per_task = int(np.floor(100 / tasks))
         if not only_config:
             # prepare permutation to shuffle label-ids (to create different class batches for each random seed)
-            permutation = np.random.permutation(list(range(100)))
+            permutation = list(range(100)) #np.random.permutation(list(range(100)))
             target_transform = transforms.Lambda(lambda y, x=permutation: int(permutation[y]))
             # prepare train and test datasets with all classes
             if not only_test:
-                cifar100_train = get_dataset('cifar100', type="train", dir=data_dir, normalize=normalize,
+                cifar100_train = get_dataset('cifar100', shift=shift, slot=slot, type="train", dir=data_dir, normalize=normalize,
                                              augment=augment, target_transform=target_transform, verbose=verbose)
-            cifar100_test = get_dataset('cifar100', type="test", dir=data_dir, normalize=normalize,
+            cifar100_test = get_dataset('cifar100', shift=shift, slot=slot, type="test", dir=data_dir, normalize=normalize,
                                         target_transform=target_transform, verbose=verbose)
             # generate labels-per-task
             labels_per_task = [

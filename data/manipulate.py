@@ -1,6 +1,36 @@
 import torch
 from torch.utils.data import Dataset
+import numpy as np
 
+#jd's version to manipulate the data
+class GetSlotDataset(Dataset):
+
+    def __init__(self, datatset_to_process, slot, shift, type='train'):
+        super().__init__()
+        self.datatset = datatset_to_process
+        self.indeces = []
+
+        label = np.asarray([lbl for _,lbl in self.datatset])
+        idx = [np.where(label==i) for i in np.unique(label)]
+
+        if type == 'train':
+            for ii in range(len(idx)):
+                indeces.extend(
+                    list(
+                        np.roll(idx[ii],(shift-1)*100))[(slot-1)*50:slot*50]
+                )
+        else:
+            for ii in range(len(idx)):
+                indeces.extend(
+                    list(
+                        np.roll(idx[ii],(shift-1)*100))[500:600]
+                )
+
+    def __len__(self):
+        return len(self.indices)
+
+    def __getitem__(self, index):
+        return self.datatset[self.indeces[index]]
 
 class ReducedDataset(Dataset):
     '''To reduce a dataset, taking only samples corresponding to provided indeces.

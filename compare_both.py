@@ -13,7 +13,7 @@ def handle_inputs():
     # Set indicator-dictionary for correctly retrieving / checking input options
     kwargs = {'single_task': False, 'only_MNIST': False}
     # Define input options
-    parser = options.define_args(filename="main_cl",
+    parser = options.define_args(filename="compare_both",
                                  description='Compare CL approaches in terms of transfer efficiency.')
     parser = options.add_general_options(parser, **kwargs)
     parser = options.add_eval_options(parser, **kwargs)
@@ -28,8 +28,11 @@ def handle_inputs():
     parser.add_argument('--c-500', metavar="C", type=float, help="--> SI: reg strength with 500 training samples")
     parser.add_argument('--lambda-500', metavar="LAMBDA", type=float,
                         help="--> EWC: reg strength with 500 training samples")
-    parser.add_argument('--o-lambda-500', metavar="LAMBDA", type=float,
-                        help="--> Online EWC: reg strength with 500 training samples")
+    parser.add_argument('--shift', metavar="LAMBDA", type=float,
+                        help="-->shift: The number of shift to perform on test-train set")
+    parser.add_argument('--slot', metavar="LAMBDA", type=float,
+                        help="--> slot: The number of slot to perform the training")
+
     args = parser.parse_args()
     options.set_defaults(args, **kwargs)
     options.check_for_errors(args, **kwargs)
