@@ -1,6 +1,4 @@
 store/datasets/
-store/plots/
-store/results/
 store/models/mM*
 
 .env
