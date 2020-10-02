@@ -28,9 +28,9 @@ def handle_inputs():
     parser.add_argument('--c-500', metavar="C", type=float, help="--> SI: reg strength with 500 training samples")
     parser.add_argument('--lambda-500', metavar="LAMBDA", type=float,
                         help="--> EWC: reg strength with 500 training samples")
-    parser.add_argument('--shift', metavar="LAMBDA", type=float,
+    parser.add_argument('--shift', metavar="LAMBDA", type=int,
                         help="-->shift: The number of shift to perform on test-train set")
-    parser.add_argument('--slot', metavar="LAMBDA", type=float,
+    parser.add_argument('--slot', metavar="LAMBDA", type=int,
                         help="--> slot: The number of slot to perform the training")
 
     args = parser.parse_args()

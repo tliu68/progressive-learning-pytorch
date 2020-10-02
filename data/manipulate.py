@@ -11,23 +11,25 @@ class GetSlotDataset(Dataset):
         self.indeces = []
 
         label = np.asarray([lbl for _,lbl in self.datatset])
-        idx = [np.where(label==i) for i in np.unique(label)]
-
+        idx = np.asarray([np.where(label==i) for i in np.unique(label)])
+        
         if type == 'train':
             for ii in range(len(idx)):
-                indeces.extend(
+                self.indeces.extend(
                     list(
-                        np.roll(idx[ii],(shift-1)*100))[(slot-1)*50:slot*50]
+                        np.roll(idx[ii],(shift-1)*100)[0][(slot-1)*50:slot*50]
+                    )
                 )
         else:
             for ii in range(len(idx)):
-                indeces.extend(
+                self.indeces.extend(
                     list(
-                        np.roll(idx[ii],(shift-1)*100))[500:600]
+                        np.roll(idx[ii],(shift-1)*100)[0][500:600]
+                    )
                 )
-
+                
     def __len__(self):
-        return len(self.indices)
+        return len(self.indeces)
 
     def __getitem__(self, index):
         return self.datatset[self.indeces[index]]
