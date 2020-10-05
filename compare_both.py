@@ -135,7 +135,7 @@ if __name__ == '__main__':
     ###----"Re-init"----###
     args.reinit = True
     REINIT = {}
-    REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
+    #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
     args.max_samples = 50
     args.iters = 500
     REINITp = {}
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     ## None
     args.replay = "none"
     NONE = {}
-    NONE = collect_all(NONE, seed_list, args, name="None")
+    #NONE = collect_all(NONE, seed_list, args, name="None")
     args.max_samples = 50
     args.iters = 500
     NONEp = {}
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     ## Offline
     args.replay = "offline"
     OFF = {}
-    OFF = collect_all(OFF, seed_list, args, name="Full replay (increasing amount of replay with each new task)")
+    #OFF = collect_all(OFF, seed_list, args, name="Full replay (increasing amount of replay with each new task)")
     args.max_samples = 50
     args.iters = 500
     OFFp = {}
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     ## Exact replay
     args.replay = "exact"
     EXACT = {}
-    EXACT = collect_all(EXACT, seed_list, args, name="Exact replay (fixed amount of total replay)")
+    #EXACT = collect_all(EXACT, seed_list, args, name="Exact replay (fixed amount of total replay)")
     args.max_samples = 50
     args.iters = 500
     EXACTp = {}
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     ## EWC
     args.ewc = True
     EWC = {}
-    EWC = collect_all(EWC, seed_list, args, name="EWC")
+    #EWC = collect_all(EWC, seed_list, args, name="EWC")
     args.max_samples = 50
     args.iters = 500
     args.ewc_lambda = args.lambda_500 if args.lambda_500 is not None else args.ewc_lambda
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     args.ewc = True
     args.ewc_lambda = args.o_lambda
     OEWC = {}
-    OEWC = collect_all(OEWC, seed_list, args, name="Online EWC")
+    #OEWC = collect_all(OEWC, seed_list, args, name="Online EWC")
     args.max_samples = 50
     args.iters = 500
     args.ewc_lambda = args.o_lambda_500 if args.o_lambda_500 is not None else args.ewc_lambda
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     ## SI
     args.si = True
     SI = {}
-    SI = collect_all(SI, seed_list, args, name="SI")
+    #SI = collect_all(SI, seed_list, args, name="SI")
     args.max_samples = 50
     args.iters = 500
     args.si_c = args.c_500 if args.c_500 is not None else args.si_c
@@ -224,7 +224,7 @@ if __name__ == '__main__':
     args.replay = "current"
     args.distill = True
     LWF = {}
-    LWF = collect_all(LWF, seed_list, args, name="LwF")
+    #LWF = collect_all(LWF, seed_list, args, name="LwF")
     args.max_samples = 50
     args.iters = 500
     LWFp = {}
