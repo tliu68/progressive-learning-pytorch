@@ -45,19 +45,19 @@ def get_results(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run; if not do so
-    if os.path.isfile('{}/dict-{}.pkl'.format(args.r_dir, param_stamp)):
+    if os.path.isfile('{}/dict-{}-{}-{}.pkl'.format(args.r_dir, param_stamp, args.slot, args.shift)):
         print("{}: already run".format(param_stamp))
     else:
         print("{}: ...running...".format(param_stamp))
         args.metrics = True
         main_cl.run(args)
     # -get average precision
-    file_name = '{}/prec-{}.txt'.format(args.r_dir, param_stamp)
+    file_name = '{}/prec-{}-{}-{}.txt'.format(args.r_dir, param_stamp, args.slot, args.shift)
     file = open(file_name)
     ave = float(file.readline())
     file.close()
     # -get metrics-dict
-    file_name = '{}/dict-{}'.format(args.r_dir, param_stamp)
+    file_name = '{}/dict-{}-{}-{}'.format(args.r_dir, param_stamp, args.slot, args.shift)
     metrics_dict = utils.load_object(file_name)
     # -print average precision on screen
     print("--> average precision: {}".format(ave))
