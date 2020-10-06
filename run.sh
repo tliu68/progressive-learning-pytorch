@@ -1,6 +1,5 @@
 # !/bin/sh
 
-tmux
 source ~/env/bin/activate
 pip install -r requirements.txt
 chmod +x main_cl.py main_pretrain.py compare_both.py
