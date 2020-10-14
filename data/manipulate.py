@@ -43,7 +43,7 @@ class GetShuffledDataset(Dataset):
         self.indeces = []
 
         label = np.asarray([lbl for _,lbl in self.datatset])
-        idx = np.asarray([np.where(label==i) for i in np.unique(label)])
+        idx = [np.where(label==i) for i in np.unique(label)]
 
         shuffled_label = []
         for task in range(10):
