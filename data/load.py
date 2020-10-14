@@ -3,7 +3,7 @@ import numpy as np
 from torchvision import transforms
 from torch.utils.data import ConcatDataset
 from data.available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
-from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels
+from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels, GetShuffledDataset
 
 def get_dataset(name, shift, slot, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
                 verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
@@ -29,7 +29,9 @@ def get_dataset(name, shift, slot, type='train', download=True, capacity=None, p
 
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
-    dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
+    #dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
+    dataset = GetShuffledDataset(dataset, slot=slot, shift=shift, type=type)
+
     #############
 
     # if relevant, select "train" or "validation"-set from training-part of data

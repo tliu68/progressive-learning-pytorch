@@ -34,6 +34,55 @@ class GetSlotDataset(Dataset):
     def __getitem__(self, index):
         return self.datatset[self.indeces[index]]
 
+#jd's version to randomly shuffle class labels for tasks 2-10
+class GetShuffledDataset(Dataset):
+    
+    def __init__(self, datatset_to_process, slot, shift, type='train'):
+        super().__init__()
+        self.datatset = datatset_to_process
+        self.indeces = []
+
+        label = np.asarray([lbl for _,lbl in self.datatset])
+        idx = np.asarray([np.where(label==i) for i in np.unique(label)])
+
+        shuffled_label = []
+        for task in range(10):
+            _tmp = [] 
+            for cls in range(10*task,10*(task+1)):
+                _tmp.extend(label[idx[cls]])
+            
+            if task > 0:
+                np.random.shuffle(_tmp)
+            
+            shuffled_label.extend(_tmp)
+
+        shuffled_label = np.asarray(shuffled_label)
+        label = shuffled_label 
+
+        idx = np.asarray([np.where(label==i) for i in np.unique(label)])
+        
+        if type == 'train':
+            for ii in range(len(idx)):
+                self.indeces.extend(
+                    list(
+                        np.roll(idx[ii],(shift-1)*100)[0][(slot-1)*50:slot*50]
+                    )
+                )
+        else:
+            for ii in range(len(idx)):
+                self.indeces.extend(
+                    list(
+                        np.roll(idx[ii],(shift-1)*100)[0][500:600]
+                    )
+                )
+                
+    def __len__(self):
+        return len(self.indeces)
+
+    def __getitem__(self, index):
+        return self.datatset[self.indeces[index]]
+ 
+
 class ReducedDataset(Dataset):
     '''To reduce a dataset, taking only samples corresponding to provided indeces.
     This is useful for splitting a dataset into a training and validation set.'''
