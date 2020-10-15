@@ -57,7 +57,6 @@ class GetShuffledDataset(Dataset):
             shuffled_label.extend(_tmp)
 
         shuffled_label = np.asarray(shuffled_label)
-        print(shuffled_label,'hlw')
         
         label = shuffled_label 
 
