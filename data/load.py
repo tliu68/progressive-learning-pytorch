@@ -4,6 +4,25 @@ from torchvision import transforms
 from torch.utils.data import ConcatDataset
 from data.available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
 from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels, GetShuffledDataset
+from skimage.transform import rotate
+from scipy import ndimage
+from skimage.util import img_as_ubyte
+
+#jd's function
+def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+    im_sz = int(np.floor(pic.shape[0]*scale))
+    pic_ = np.uint8(np.zeros((im_sz,im_sz,3),dtype=int))
+
+    pic_[:,:,0] = ndimage.zoom(pic[:,:,0],scale)
+
+    pic_[:,:,1] = ndimage.zoom(pic[:,:,1],scale)
+    pic_[:,:,2] = ndimage.zoom(pic[:,:,2],scale)
+
+    image_aug = rotate(pic_, angle, resize=False)
+    #print(image_aug.shape)
+    image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+
+    return img_as_ubyte(image_aug_)
 
 def get_dataset(name, shift, slot, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
                 verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
