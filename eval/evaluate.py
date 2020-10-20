@@ -33,6 +33,8 @@ def validate(model, dataset, batch_size=128, test_size=1024, verbose=True, allow
             model.apply_XdGmask(task=task)
 
     # Loop over batches in [dataset]
+    #print(len(dataset), batch_size,'kutta')
+    
     data_loader = utils.get_data_loader(dataset, batch_size, cuda=cuda)
     total_tested = total_correct = 0
     for data, labels in data_loader:
@@ -128,6 +130,7 @@ def intial_accuracy(model, datasets, metrics_dict, classes_per_task=None, test_s
 
     n_tasks = len(datasets)
     precs = []
+    #print(len(datasets[0]), 'amakei khujo?')
 
     for i in range(n_tasks):
         precision = validate(
