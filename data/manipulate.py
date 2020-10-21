@@ -152,7 +152,7 @@ class GetAngleDataset(Dataset):
                         idx[ii][0][500:600]
                     )
                 )
-        print(self.indeces1 , self.indeces2, 'kutta2')
+        #print(self.indeces1 , self.indeces2, 'kutta2')
     def __len__(self):
         return len(self.indeces1)+len(self.indeces2)
 

@@ -30,10 +30,9 @@ def get_dataset(name, angle=0, type='train', download=True, capacity=None, permu
 
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
-    #dataset = GetSlotDataset(dataset, slot=1, shift=1, type=type)
-    print(len(dataset), 'dataset pai na')
-    #dataset = GetAngleDataset(dataset, type=type, angle=angle)
-    
+    #print(dataset[10], 'kukuta')
+    #dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
+    dataset = GetAngleDataset(dataset, type=type, angle=angle)
 
     #############
 
@@ -167,7 +166,7 @@ def get_multitask_experiment(name, tasks, angle, data_dir="./store/datasets", no
         classes_per_task = 10 #int(np.floor(100 / tasks))
         if not only_config:
             # prepare permutation to shuffle label-ids (to create different class batches for each random seed)
-            permutation = list(range(20)) #np.random.permutation(list(range(100)))
+            permutation = list(range(100)) #np.random.permutation(list(range(100)))
             target_transform = transforms.Lambda(lambda y, x=permutation: int(permutation[y]))
             # prepare train and test datasets with all classes
             if not only_test:
@@ -179,12 +178,10 @@ def get_multitask_experiment(name, tasks, angle, data_dir="./store/datasets", no
             labels_per_task = [
                 list(np.array(range(classes_per_task)) + classes_per_task * task_id) for task_id in range(tasks)
             ]
+            #print(labels_per_task, 'labels per task')
             # split them up into sub-tasks
             train_datasets = []
             test_datasets = []
-
-            print(labels_per_task, 'labels per task')
-
             for labels in labels_per_task:
                 target_transform = None
                 if not only_test:
@@ -194,10 +191,6 @@ def get_multitask_experiment(name, tasks, angle, data_dir="./store/datasets", no
                         train_datasets.append(ReducedSubDataset(cifar100_train, labels,
                                                                 target_transform=target_transform, max=max_samples))
                 test_datasets.append(SubDataset(cifar100_test, labels, target_transform=target_transform))
-
-            print(len(cifar100_test), 'len')
-            print(len(cifar100_train), 'train len')
-
     else:
         raise RuntimeError('Given undefined experiment: {}'.format(name))
 

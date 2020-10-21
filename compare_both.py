@@ -134,7 +134,7 @@ if __name__ == '__main__':
     seed_list = list(range(args.seed, args.seed+10))
 
     ###----"Re-init"----###
-    '''args.reinit = True
+    args.reinit = True
     REINIT = {}
     #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
     args.max_samples = 250
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
     args.max_samples = None
     args.iters = 5000
-    args.reinit = False'''
+    args.reinit = False
 
     ## None
     args.replay = "none"

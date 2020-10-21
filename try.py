@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 import pandas as pd
 #%%
-with open('./store/results/dict-CIFAR100-N10-max50--C3-5x16-bn_F-1024x2000x2000_c100--i500-lr0.0001-b256--EWC10000.0-1000-1-2.pkl', 'rb') as f:
+with open('./store/results/dict-CIFAR100-N2-max250--C3-5x16-bn_F-1024x2000x2000_c20--i10-lr0.0001-b256--EWC10000.0-1000-O1-1.pkl', 'rb') as f:
     data = pickle.load(f)
 
 print(data)
