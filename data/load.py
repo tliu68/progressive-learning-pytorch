@@ -3,28 +3,10 @@ import numpy as np
 from torchvision import transforms
 from torch.utils.data import ConcatDataset
 from data.available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
-from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels, GetShuffledDataset
-from skimage.transform import rotate
-from scipy import ndimage
-from skimage.util import img_as_ubyte
+from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels, GetShuffledDataset, GetAngleDataset
 
-#jd's function
-def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
-    im_sz = int(np.floor(pic.shape[0]*scale))
-    pic_ = np.uint8(np.zeros((im_sz,im_sz,3),dtype=int))
 
-    pic_[:,:,0] = ndimage.zoom(pic[:,:,0],scale)
-
-    pic_[:,:,1] = ndimage.zoom(pic[:,:,1],scale)
-    pic_[:,:,2] = ndimage.zoom(pic[:,:,2],scale)
-
-    image_aug = rotate(pic_, angle, resize=False)
-    #print(image_aug.shape)
-    image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
-
-    return img_as_ubyte(image_aug_)
-
-def get_dataset(name, shift, slot, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
+def get_dataset(name, angle=0, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
                 verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
     '''Create [train|valid|test]-dataset.'''
 
@@ -48,8 +30,9 @@ def get_dataset(name, shift, slot, type='train', download=True, capacity=None, p
 
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
+    #print(dataset[10], 'kukuta')
     #dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
-    dataset = GetShuffledDataset(dataset, slot=slot, shift=shift, type=type)
+    dataset = GetAngleDataset(dataset, type=type, angle=angle)
 
     #############
 
@@ -108,10 +91,10 @@ def get_singletask_experiment(name, data_dir="./store/datasets", normalize=False
     return (trainset, testset), config
 
 
-def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/datasets", normalize=False, augment=False,
+def get_multitask_experiment(name, tasks, angle, data_dir="./store/datasets", normalize=False, augment=False,
                              only_config=False, verbose=False, exception=False, only_test=False, max_samples=None):
     '''Load, organize and return train- and test-dataset for requested multi-task experiment.'''
-
+    #print('max sample is '+str(max_samples))
     ## NOTE: option 'normalize' and 'augment' only implemented for CIFAR-based experiments.
 
     # depending on experiment, get and organize the datasets
@@ -180,21 +163,22 @@ def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/dataset
             raise ValueError("Experiment 'CIFAR100' cannot have more than 100 tasks!")
         # configurations
         config = DATASET_CONFIGS['cifar100']
-        classes_per_task = int(np.floor(100 / tasks))
+        classes_per_task = 10 #int(np.floor(100 / tasks))
         if not only_config:
             # prepare permutation to shuffle label-ids (to create different class batches for each random seed)
             permutation = list(range(100)) #np.random.permutation(list(range(100)))
             target_transform = transforms.Lambda(lambda y, x=permutation: int(permutation[y]))
             # prepare train and test datasets with all classes
             if not only_test:
-                cifar100_train = get_dataset('cifar100', shift=shift, slot=slot, type="train", dir=data_dir, normalize=normalize,
+                cifar100_train = get_dataset('cifar100', angle=angle, type="train", dir=data_dir, normalize=normalize,
                                              augment=augment, target_transform=target_transform, verbose=verbose)
-            cifar100_test = get_dataset('cifar100', shift=shift, slot=slot, type="test", dir=data_dir, normalize=normalize,
+            cifar100_test = get_dataset('cifar100', angle=angle, type="test", dir=data_dir, normalize=normalize,
                                         target_transform=target_transform, verbose=verbose)
             # generate labels-per-task
             labels_per_task = [
                 list(np.array(range(classes_per_task)) + classes_per_task * task_id) for task_id in range(tasks)
             ]
+            #print(labels_per_task, 'labels per task')
             # split them up into sub-tasks
             train_datasets = []
             test_datasets = []

@@ -2,15 +2,39 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 
+
+from skimage.transform import rotate
+from scipy import ndimage
+from skimage.util import img_as_ubyte
+
+#jd's function
+#class _image_aug:
+
+def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+    im_sz = int(np.floor(pic.shape[1]*scale))
+    pic_ = np.uint8(np.zeros((im_sz,im_sz,3),dtype=int))
+
+    pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
+
+    pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
+    pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
+
+    image_aug = rotate(pic_, angle, resize=False)
+    #print(image_aug.shape)
+    image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+    image_aug_ = image_aug_.reshape(3,32,32)
+
+    return img_as_ubyte(image_aug_)
+
 #jd's version to manipulate the data
 class GetSlotDataset(Dataset):
 
     def __init__(self, datatset_to_process, slot, shift, type='train'):
         super().__init__()
-        self.datatset = datatset_to_process
+        self.dataset = datatset_to_process
         self.indeces = []
 
-        label = np.asarray([lbl for _,lbl in self.datatset])
+        label = np.asarray([lbl for _,lbl in self.dataset])
         idx = np.asarray([np.where(label==i) for i in np.unique(label)])
         
         if type == 'train':
@@ -32,14 +56,14 @@ class GetSlotDataset(Dataset):
         return len(self.indeces)
 
     def __getitem__(self, index):
-        return self.datatset[self.indeces[index]]
+        return self.dataset[self.indeces[index]]
 
 #jd's version to randomly shuffle class labels for tasks 2-10
 class GetShuffledDataset(Dataset):
     
     def __init__(self, datatset_to_process, slot, shift, type='train'):
         super().__init__()
-        self.datatset = datatset_to_process
+        self.dataset = datatset_to_process
         self.indeces = []
 
         label = np.asarray([lbl for _,lbl in self.datatset])
@@ -81,8 +105,82 @@ class GetShuffledDataset(Dataset):
         return len(self.indeces)
 
     def __getitem__(self, index):
-        return self.datatset[self.indeces[index]]
+        return self.dataset[self.indeces[index]]
  
+ #jd's version to do rotation experiment on task 1 data
+class GetAngleDataset(Dataset):
+
+    def __init__(self, datatset_to_process, type='train', angle=0):
+        super().__init__()
+        self.dataset = datatset_to_process
+        self.indeces1 = []
+        self.indeces2 = []
+        self.angle = angle
+        self.type = type
+
+        label = np.asarray([lbl for _,lbl in self.dataset])
+        idx = np.asarray([np.where(label==i) for i in range(10)])
+        #print(datatset_to_process[0], 'idx')
+        if type == 'train':
+            for ii in range(len(idx)):
+                indxs = idx[ii][0][0:500]
+                np.random.shuffle(indxs)
+                
+                self.indeces1.extend(
+                    list(
+                        indxs[0:250]
+                    )
+                )
+
+                self.indeces2.extend(
+                    list(
+                        indxs[250:500]
+                    )
+                )
+
+            #print(len(self.indeces1), len(self.indeces2), 'kutta')
+        else:
+            for ii in range(len(idx)):
+                self.indeces1.extend(
+                    list(
+                        idx[ii][0][500:600]
+                    )
+                )
+
+                self.indeces2.extend(
+                    list(
+                        idx[ii][0][500:600]
+                    )
+                )
+        #print(self.indeces1 , self.indeces2, 'kutta2')
+    def __len__(self):
+        return len(self.indeces1)+len(self.indeces2)
+
+    def __getitem__(self, index):
+        
+        if index >= 2500 and self.type == 'train':
+            sample = self.dataset[self.indeces2[index-2500]]
+            lbl = sample[1] + 10
+            sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
+            #print(type(sample[1]))
+        elif self.type == 'train':
+            sample = self.dataset[self.indeces1[index]]
+            lbl = sample[1]
+            sample_ = sample[0]
+        elif index>=1000 and self.type == 'test':
+            #print(len(self.indeces2), index, 'hi')
+            sample = self.dataset[self.indeces2[index-1000]]
+            lbl = sample[1] + 10
+
+            #print(lbl)
+            sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
+        else:
+            sample = self.dataset[self.indeces1[index]]
+            lbl = sample[1]
+            sample_ = sample[0]
+        
+        return (sample_, lbl)
+
 
 class ReducedDataset(Dataset):
     '''To reduce a dataset, taking only samples corresponding to provided indeces.
@@ -111,6 +209,7 @@ class ReducedSubDataset(Dataset):
         self.dataset = original_dataset
         self.sub_indeces = []
         counts = {}
+        #print(sub_labels, 'sub_labels')
         for label in sub_labels:
             counts[label] = 0
         for index in range(len(self.dataset)):
@@ -125,6 +224,8 @@ class ReducedSubDataset(Dataset):
                 if counts[label]<max:
                     counts[label] += 1
                     self.sub_indeces.append(index)
+                
+                    #print(counts, 'dgsfg')
         self.target_transform = target_transform
 
     def __len__(self):
