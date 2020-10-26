@@ -32,8 +32,7 @@ def handle_inputs():
                         help="--> Online EWC: reg strength with 500 training samples")
     parser.add_argument('--shift', metavar="LAMBDA", type=int,
                         help="-->shift: The number of shift to perform on test-train set")
-    parser.add_argument('--slot', metavar="LAMBDA", type=int,
-                        help="--> slot: The number of slot to perform the training")
+
 
     args = parser.parse_args()
     options.set_defaults(args, **kwargs)
@@ -45,19 +44,19 @@ def get_results(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run; if not do so
-    if os.path.isfile('{}/dict-{}-{}-{}.pkl'.format(args.r_dir, param_stamp, args.slot, args.shift)):
+    if os.path.isfile('{}/dict-{}-{}.pkl'.format(args.r_dir, param_stamp, args.shift)):
         print("{}: already run".format(param_stamp))
     else:
         print("{}: ...running...".format(param_stamp))
         args.metrics = True
         main_cl.run(args)
     # -get average precision
-    file_name = '{}/prec-{}-{}-{}.txt'.format(args.r_dir, param_stamp, args.slot, args.shift)
+    file_name = '{}/prec-{}-{}.txt'.format(args.r_dir, param_stamp, args.shift)
     file = open(file_name)
     ave = float(file.readline())
     file.close()
     # -get metrics-dict
-    file_name = '{}/dict-{}-{}-{}'.format(args.r_dir, param_stamp, args.slot, args.shift)
+    file_name = '{}/dict-{}-{}'.format(args.r_dir, param_stamp, args.shift)
     metrics_dict = utils.load_object(file_name)
     # -print average precision on screen
     print("--> average precision: {}".format(ave))
@@ -131,13 +130,13 @@ if __name__ == '__main__':
 
     #jd's change
     seed_list = list(range(args.seed, args.seed+1))
-
+    print(seed_list)
     ###----"Re-init"----###
     args.reinit = True
     REINIT = {}
     #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     REINITp = {}
     REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
     args.max_samples = None
@@ -148,8 +147,8 @@ if __name__ == '__main__':
     args.replay = "none"
     NONE = {}
     #NONE = collect_all(NONE, seed_list, args, name="None")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     NONEp = {}
     NONEp = collect_all(NONEp, seed_list, args, name="None - 500 samples")
     args.max_samples = None
@@ -159,8 +158,8 @@ if __name__ == '__main__':
     args.replay = "offline"
     OFF = {}
     #OFF = collect_all(OFF, seed_list, args, name="Full replay (increasing amount of replay with each new task)")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     OFFp = {}
     OFFp = collect_all(OFFp, seed_list, args, name="Full replay (increasing amount of replay with each new task - 500 samples)")
     args.max_samples = None
@@ -171,8 +170,8 @@ if __name__ == '__main__':
     args.replay = "exact"
     EXACT = {}
     #EXACT = collect_all(EXACT, seed_list, args, name="Exact replay (fixed amount of total replay)")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     EXACTp = {}
     EXACTp = collect_all(EXACTp, seed_list, args, name="Exact replay (fixed amount of total replay - 500 samples)")
     args.max_samples = None
@@ -183,8 +182,8 @@ if __name__ == '__main__':
     args.ewc = True
     EWC = {}
     #EWC = collect_all(EWC, seed_list, args, name="EWC")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     args.ewc_lambda = args.lambda_500 if args.lambda_500 is not None else args.ewc_lambda
     EWCp = {}
     EWCp = collect_all(EWCp, seed_list, args, name="EWC - 500 samples")
@@ -197,8 +196,8 @@ if __name__ == '__main__':
     args.ewc_lambda = args.o_lambda
     OEWC = {}
     #OEWC = collect_all(OEWC, seed_list, args, name="Online EWC")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     args.ewc_lambda = args.o_lambda_500 if args.o_lambda_500 is not None else args.ewc_lambda
     OEWCp = {}
     OEWCp = collect_all(OEWCp, seed_list, args, name="Online EWC - 500 samples")
@@ -211,8 +210,8 @@ if __name__ == '__main__':
     args.si = True
     SI = {}
     #SI = collect_all(SI, seed_list, args, name="SI")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     args.si_c = args.c_500 if args.c_500 is not None else args.si_c
     SIp = {}
     SIp = collect_all(SIp, seed_list, args, name="SI - 500 samples")
@@ -225,8 +224,8 @@ if __name__ == '__main__':
     args.distill = True
     LWF = {}
     #LWF = collect_all(LWF, seed_list, args, name="LwF")
-    args.max_samples = 50
-    args.iters = 500
+    args.max_samples = 500
+    args.iters = 5000
     LWFp = {}
     LWFp = collect_all(LWFp, seed_list, args, name="LwF - 500 samples")
     args.max_samples = None
