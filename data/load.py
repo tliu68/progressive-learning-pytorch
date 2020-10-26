@@ -89,7 +89,7 @@ def get_singletask_experiment(name, data_dir="./store/datasets", normalize=False
     return (trainset, testset), config
 
 
-def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/datasets", normalize=False, augment=False,
+def get_multitask_experiment(name, tasks, shift, data_dir="./store/datasets", normalize=False, augment=False,
                              only_config=False, verbose=False, exception=False, only_test=False, max_samples=None):
     '''Load, organize and return train- and test-dataset for requested multi-task experiment.'''
 
@@ -170,7 +170,7 @@ def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/dataset
             if not only_test:
                 cifar100_train = get_dataset('cifar100', shift=shift, type="train", dir=data_dir, normalize=normalize,
                                              augment=augment, target_transform=target_transform, verbose=verbose)
-            cifar100_test = get_dataset('cifar100', shift=shift, slot=slot, type="test", dir=data_dir, normalize=normalize,
+            cifar100_test = get_dataset('cifar100', shift=shift, type="test", dir=data_dir, normalize=normalize,
                                         target_transform=target_transform, verbose=verbose)
             # generate labels-per-task
             labels_per_task = [
