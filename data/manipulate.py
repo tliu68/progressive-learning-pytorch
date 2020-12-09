@@ -11,8 +11,9 @@ from skimage.util import img_as_ubyte
 #class _image_aug:
 
 def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+    pic = pic.unsqueeze_(0)[0]
     im_sz = int(np.floor(pic.shape[1]*scale))
-    pic_ = np.uint8(np.zeros((im_sz,im_sz,3),dtype=int))
+    pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
 
     pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
 
@@ -24,7 +25,7 @@ def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
     image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
     image_aug_ = image_aug_.reshape(3,32,32)
 
-    return img_as_ubyte(image_aug_)
+    return image_aug_
 
 #jd's version to manipulate the data
 class GetSlotDataset(Dataset):
@@ -166,18 +167,18 @@ class GetAngleDataset(Dataset):
         elif self.type == 'train':
             sample = self.dataset[self.indeces1[index]]
             lbl = sample[1]
-            sample_ = sample[0]
+            sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         elif index>=1000 and self.type == 'test':
             #print(len(self.indeces2), index, 'hi')
             sample = self.dataset[self.indeces2[index-1000]]
             lbl = sample[1] + 10
 
             #print(lbl)
-            sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
+            sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         else:
             sample = self.dataset[self.indeces1[index]]
             lbl = sample[1]
-            sample_ = sample[0]
+            sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         
         return (sample_, lbl)
 
@@ -200,7 +201,6 @@ class ReducedDataset(Dataset):
 
 class ReducedSubDataset(Dataset):
     '''To reduce & sub-sample a dataset, taking only those samples with label in [sub_labels] and at most [max] of them.
-
     After this selection of samples has been made, it is possible to transform the target-labels,
     which can be useful when doing continual learning with fixed number of output units.'''
 
@@ -241,7 +241,6 @@ class ReducedSubDataset(Dataset):
 
 class SubDataset(Dataset):
     '''To sub-sample a dataset, taking only those samples with label in [sub_labels].
-
     After this selection of samples has been made, it is possible to transform the target-labels,
     which can be useful when doing continual learning with fixed number of output units.'''
 
@@ -274,7 +273,6 @@ class SubDataset(Dataset):
 
 class ExemplarDataset(Dataset):
     '''Create dataset from list of <np.arrays> with shape (N, C, H, W) (i.e., with N images each).
-
     The images at the i-th entry of [exemplar_sets] belong to class [i], unless a [target_transform] is specified'''
 
     def __init__(self, exemplar_sets, target_transform=None):
@@ -329,7 +327,6 @@ class TransformedDataset(Dataset):
 
 def permutate_image_pixels(image, permutation):
     '''Permutate the pixels of an image according to [permutation].
-
     [image]         3D-tensor containing the image
     [permutation]   <ndarray> of pixel-indeces in their new order'''
 

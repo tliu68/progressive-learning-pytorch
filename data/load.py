@@ -4,7 +4,8 @@ from torchvision import transforms
 from torch.utils.data import ConcatDataset
 from data.available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
 from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels, GetShuffledDataset, GetAngleDataset
-
+from os import path
+import pickle 
 
 def get_dataset(name, angle=0, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
                 verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
@@ -16,6 +17,7 @@ def get_dataset(name, angle=0, type='train', download=True, capacity=None, permu
     # specify image-transformations to be applied
     transforms_list = [*AVAILABLE_TRANSFORMS['augment']] if augment else []
     transforms_list += [*AVAILABLE_TRANSFORMS[name]]
+
     if normalize:
         transforms_list += [*AVAILABLE_TRANSFORMS[name+"_norm"]]
     if permutation is not None:
@@ -27,6 +29,10 @@ def get_dataset(name, angle=0, type='train', download=True, capacity=None, permu
                             download=download, transform=dataset_transform, target_transform=target_transform)
     dataset_test = dataset_class('{dir}/{name}'.format(dir=dir, name=data_name), train=False,
                             download=download, transform=dataset_transform, target_transform=target_transform)
+
+    '''if ~path.exists('rotated_fig.pickle'):
+                with open('rotated_fig.pickle','wb') as f:
+                    pickle.dump(dataset_train[10], f)'''
 
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
