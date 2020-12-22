@@ -40,7 +40,7 @@ def handle_inputs():
 
 
 ## Function for running one continual learning experiment
-def run(args, verbose=False):
+def run(args, model_name, shift, slot, verbose=False):
 
     # Create plots- and results-directories if needed
     if not os.path.isdir(args.r_dir):
@@ -256,7 +256,7 @@ def run(args, verbose=False):
             print("\nTraining...")
         # Train model
         train_cl(
-            model, train_datasets, replay_mode=args.replay if hasattr(args, 'replay') else "none",
+            model, train_datasets, model_name=model_name, shift=shift, slot=slot, replay_mode=args.replay if hasattr(args, 'replay') else "none",
             classes_per_task=classes_per_task, iters=args.iters, args=args,
             batch_size=args.batch, batch_size_replay=args.batch_replay if hasattr(args, 'batch_replay') else None,
             eval_cbs=eval_cbs, loss_cbs=solver_loss_cbs, reinit=utils.checkattr(args, 'reinit'),

@@ -41,7 +41,7 @@ def handle_inputs():
     return args
 
 
-def get_results(args):
+def get_results(args, model_name, shift, slot):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run; if not do so
@@ -50,7 +50,7 @@ def get_results(args):
     else:
         print("{}: ...running...".format(param_stamp))
         args.metrics = True
-        main_cl.run(args)
+        main_cl.run(args, model_name=model_name, shift=shift, slot=slot)
     # -get average precision
     file_name = '{}/prec-{}-{}-{}.txt'.format(args.r_dir, param_stamp, args.slot, args.shift)
     file = open(file_name)
@@ -65,14 +65,14 @@ def get_results(args):
     return (ave, metrics_dict)
 
 
-def collect_all(method_dict, seed_list, args, name=None):
+def collect_all(method_dict, seed_list, args, model_name, name=None):
     # -print name of method on screen
     if name is not None:
         print("\n------{}------".format(name))
     # -run method for all random seeds
     for seed in seed_list:
         args.seed = seed
-        method_dict[seed] = get_results(args)
+        method_dict[seed] = get_results(args, model_name=model_name, shift=args.shift, slot=args.slot)
     # -return updated dictionary with results
     return method_dict
 
@@ -137,9 +137,9 @@ if __name__ == '__main__':
     REINIT = {}
     #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     REINITp = {}
-    REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
+    REINITp = collect_all(REINITp, seed_list, args, model_name='reinit', name="Only train on each individual task (using 'reinit' - 500 samples)")
     args.max_samples = None
     args.iters = 5000
     args.reinit = False
@@ -149,9 +149,9 @@ if __name__ == '__main__':
     NONE = {}
     #NONE = collect_all(NONE, seed_list, args, name="None")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     NONEp = {}
-    NONEp = collect_all(NONEp, seed_list, args, name="None - 500 samples")
+    NONEp = collect_all(NONEp, seed_list, args, model_name='None', name="None - 500 samples")
     args.max_samples = None
     args.iters = 5000
 
@@ -160,9 +160,9 @@ if __name__ == '__main__':
     OFF = {}
     #OFF = collect_all(OFF, seed_list, args, name="Full replay (increasing amount of replay with each new task)")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     OFFp = {}
-    OFFp = collect_all(OFFp, seed_list, args, name="Full replay (increasing amount of replay with each new task - 500 samples)")
+    OFFp = collect_all(OFFp, seed_list, args, model_name='offline', name="Full replay (increasing amount of replay with each new task - 500 samples)")
     args.max_samples = None
     args.iters = 5000
     args.replay = "none"
@@ -172,9 +172,9 @@ if __name__ == '__main__':
     EXACT = {}
     #EXACT = collect_all(EXACT, seed_list, args, name="Exact replay (fixed amount of total replay)")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     EXACTp = {}
-    EXACTp = collect_all(EXACTp, seed_list, args, name="Exact replay (fixed amount of total replay - 500 samples)")
+    EXACTp = collect_all(EXACTp, seed_list, args, model_name='exact', name="Exact replay (fixed amount of total replay - 500 samples)")
     args.max_samples = None
     args.iters = 5000
     args.replay = "none"
@@ -184,10 +184,10 @@ if __name__ == '__main__':
     EWC = {}
     #EWC = collect_all(EWC, seed_list, args, name="EWC")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     args.ewc_lambda = args.lambda_500 if args.lambda_500 is not None else args.ewc_lambda
     EWCp = {}
-    EWCp = collect_all(EWCp, seed_list, args, name="EWC - 500 samples")
+    EWCp = collect_all(EWCp, seed_list, args, model_name='EWC', name="EWC - 500 samples")
     args.max_samples = None
     args.iters = 5000
 
@@ -198,10 +198,10 @@ if __name__ == '__main__':
     OEWC = {}
     #OEWC = collect_all(OEWC, seed_list, args, name="Online EWC")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     args.ewc_lambda = args.o_lambda_500 if args.o_lambda_500 is not None else args.ewc_lambda
     OEWCp = {}
-    OEWCp = collect_all(OEWCp, seed_list, args, name="Online EWC - 500 samples")
+    OEWCp = collect_all(OEWCp, seed_list, args, model_name='OEWC', name="Online EWC - 500 samples")
     args.max_samples = None
     args.iters = 5000
     args.ewc = False
@@ -212,10 +212,10 @@ if __name__ == '__main__':
     SI = {}
     #SI = collect_all(SI, seed_list, args, name="SI")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     args.si_c = args.c_500 if args.c_500 is not None else args.si_c
     SIp = {}
-    SIp = collect_all(SIp, seed_list, args, name="SI - 500 samples")
+    SIp = collect_all(SIp, seed_list, args, model_name='SI', name="SI - 500 samples")
     args.max_samples = None
     args.iters = 5000
     args.si = False
@@ -226,9 +226,9 @@ if __name__ == '__main__':
     LWF = {}
     #LWF = collect_all(LWF, seed_list, args, name="LwF")
     args.max_samples = 50
-    args.iters = 500
+    args.iters = 5
     LWFp = {}
-    LWFp = collect_all(LWFp, seed_list, args, name="LwF - 500 samples")
+    LWFp = collect_all(LWFp, seed_list, args, model_name='LwF', name="LwF - 500 samples")
     args.max_samples = None
     args.iters = 5000
 
