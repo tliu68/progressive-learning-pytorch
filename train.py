@@ -6,7 +6,7 @@ import copy
 import utils
 from data.manipulate import SubDataset, ExemplarDataset
 from models.cl.continual_learner import ContinualLearner
-import time,sys
+import time, sys, pickle
 
 def get_size(obj, seen=None):
     """Recursively finds size of objects"""
