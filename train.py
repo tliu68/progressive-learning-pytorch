@@ -101,6 +101,7 @@ def train_cl(model, train_datasets, model_name, shift, slot, replay_mode="none",
     # Use cuda?
     device = model._device()
     cuda = model._is_on_cuda()
+    print(cuda,'cuda')
 
     # Set default-values if not specified
     batch_size_replay = batch_size if batch_size_replay is None else batch_size_replay
