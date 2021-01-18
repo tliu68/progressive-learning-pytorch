@@ -5,7 +5,7 @@ from torch.utils.data import ConcatDataset
 from data.available import AVAILABLE_DATASETS, AVAILABLE_TRANSFORMS, DATASET_CONFIGS
 from data.manipulate import ReducedDataset, ReducedSubDataset, SubDataset, TransformedDataset, GetSlotDataset, permutate_image_pixels, GetShuffledDataset
 
-def get_dataset(name, shift, slot, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
+def get_dataset(name, shift, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
                 verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
     '''Create [train|valid|test]-dataset.'''
 
@@ -30,7 +30,7 @@ def get_dataset(name, shift, slot, type='train', download=True, capacity=None, p
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
     #dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
-    dataset = GetShuffledDataset(dataset, slot=slot, shift=shift, type=type)
+    dataset = GetShuffledDataset(dataset, shift=shift, type=type)
 
     #############
 
@@ -89,7 +89,7 @@ def get_singletask_experiment(name, data_dir="./store/datasets", normalize=False
     return (trainset, testset), config
 
 
-def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/datasets", normalize=False, augment=False,
+def get_multitask_experiment(name, tasks, shift, data_dir="./store/datasets", normalize=False, augment=False,
                              only_config=False, verbose=False, exception=False, only_test=False, max_samples=None):
     '''Load, organize and return train- and test-dataset for requested multi-task experiment.'''
 
@@ -168,9 +168,9 @@ def get_multitask_experiment(name, tasks, slot, shift, data_dir="./store/dataset
             target_transform = transforms.Lambda(lambda y, x=permutation: int(permutation[y]))
             # prepare train and test datasets with all classes
             if not only_test:
-                cifar100_train = get_dataset('cifar100', shift=shift, slot=slot, type="train", dir=data_dir, normalize=normalize,
+                cifar100_train = get_dataset('cifar100', shift=shift, type="train", dir=data_dir, normalize=normalize,
                                              augment=augment, target_transform=target_transform, verbose=verbose)
-            cifar100_test = get_dataset('cifar100', shift=shift, slot=slot, type="test", dir=data_dir, normalize=normalize,
+            cifar100_test = get_dataset('cifar100', shift=shift, type="test", dir=data_dir, normalize=normalize,
                                         target_transform=target_transform, verbose=verbose)
             # generate labels-per-task
             labels_per_task = [

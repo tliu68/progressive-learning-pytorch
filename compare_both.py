@@ -136,7 +136,7 @@ if __name__ == '__main__':
     args.reinit = True
     REINIT = {}
     #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     REINITp = {}
     REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     args.replay = "none"
     NONE = {}
     #NONE = collect_all(NONE, seed_list, args, name="None")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     NONEp = {}
     NONEp = collect_all(NONEp, seed_list, args, name="None - 500 samples")
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     args.replay = "offline"
     OFF = {}
     #OFF = collect_all(OFF, seed_list, args, name="Full replay (increasing amount of replay with each new task)")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     OFFp = {}
     OFFp = collect_all(OFFp, seed_list, args, name="Full replay (increasing amount of replay with each new task - 500 samples)")
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     args.replay = "exact"
     EXACT = {}
     #EXACT = collect_all(EXACT, seed_list, args, name="Exact replay (fixed amount of total replay)")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     EXACTp = {}
     EXACTp = collect_all(EXACTp, seed_list, args, name="Exact replay (fixed amount of total replay - 500 samples)")
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     args.ewc = True
     EWC = {}
     #EWC = collect_all(EWC, seed_list, args, name="EWC")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     args.ewc_lambda = args.lambda_500 if args.lambda_500 is not None else args.ewc_lambda
     EWCp = {}
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     args.ewc_lambda = args.o_lambda
     OEWC = {}
     #OEWC = collect_all(OEWC, seed_list, args, name="Online EWC")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     args.ewc_lambda = args.o_lambda_500 if args.o_lambda_500 is not None else args.ewc_lambda
     OEWCp = {}
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     args.si = True
     SI = {}
     #SI = collect_all(SI, seed_list, args, name="SI")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     args.si_c = args.c_500 if args.c_500 is not None else args.si_c
     SIp = {}
@@ -225,7 +225,7 @@ if __name__ == '__main__':
     args.distill = True
     LWF = {}
     #LWF = collect_all(LWF, seed_list, args, name="LwF")
-    args.max_samples = 50
+    args.max_samples = 500
     args.iters = 500
     LWFp = {}
     LWFp = collect_all(LWFp, seed_list, args, name="LwF - 500 samples")

@@ -37,7 +37,7 @@ class GetSlotDataset(Dataset):
 #jd's version to randomly shuffle class labels for tasks 2-10
 class GetShuffledDataset(Dataset):
     
-    def __init__(self, datatset_to_process, slot, shift, type='train'):
+    def __init__(self, datatset_to_process, shift, type='train'):
         super().__init__()
         self.datatset = datatset_to_process
         self.indeces = []
@@ -66,7 +66,7 @@ class GetShuffledDataset(Dataset):
             for ii in range(len(idx)):
                 self.indeces.extend(
                     list(
-                        np.roll(idx[ii],(shift-1)*100)[0][(slot-1)*50:slot*50]
+                        np.roll(idx[ii],(shift-1)*100)[0][0:500]
                     )
                 )
         else:
