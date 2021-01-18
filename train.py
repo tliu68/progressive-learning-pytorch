@@ -98,6 +98,9 @@ def train_cl(model, train_datasets, model_name, shift, slot, replay_mode="none",
     [only_last]         <bool>, only train on final task / episode
     [*_cbs]             <list> of call-back functions to evaluate training-progress'''
 
+    #jd's change to measure time
+    eval_cbs=list()
+    
     # Should convolutional layers be frozen?
     freeze_convE = (utils.checkattr(args, "freeze_convE") and hasattr(args, "depth") and args.depth>0)
 
