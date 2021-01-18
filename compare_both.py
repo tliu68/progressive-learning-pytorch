@@ -51,7 +51,7 @@ def get_results(args, model_name, shift, slot):
         print("{}: ...running...".format(param_stamp))
         args.metrics = True
         main_cl.run(args, model_name=model_name, shift=shift, slot=slot)
-    # -get average precision
+    '''# -get average precision
     file_name = '{}/prec-{}-{}-{}.txt'.format(args.r_dir, param_stamp, args.slot, args.shift)
     file = open(file_name)
     ave = float(file.readline())
@@ -62,7 +62,7 @@ def get_results(args, model_name, shift, slot):
     # -print average precision on screen
     print("--> average precision: {}".format(ave))
     # -return average precision & metrics-dict
-    return (ave, metrics_dict)
+    return (ave, metrics_dict)'''
 
 
 def collect_all(method_dict, seed_list, args, model_name, name=None):

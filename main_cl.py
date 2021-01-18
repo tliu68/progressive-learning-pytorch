@@ -318,7 +318,7 @@ def run(args, model_name, shift, slot, verbose=False):
             print('=> Average precision over all {} tasks: {:.4f}\n'.format(args.tasks, average_precs_ex))
 
     # If requested, compute metrics
-    if args.metrics:
+    '''if args.metrics:
         # Load accuracy matrix of "reinit"-experiment (i.e., each task's accuracy when only trained on that task)
         if not utils.checkattr(args, 'reinit'):
             file_name = "{}/dict-{}-{}-{}".format(args.r_dir, reinit_param_stamp, args.slot, args.shift)
@@ -454,7 +454,7 @@ def run(args, model_name, shift, slot, verbose=False):
 
         # -print name of generated plot on screen
         if verbose:
-            print("\nGenerated plot: {}\n".format(plot_name))
+            print("\nGenerated plot: {}\n".format(plot_name))'''
 
 
 
