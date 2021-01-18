@@ -41,6 +41,9 @@ def train(model, train_loader, iters, loss_cbs=list(), eval_cbs=list(), save_eve
 
     device = model._device()
 
+    #jd's change to measure time
+    eval_cbs=list()
+
     # Should convolutional layers be frozen?
     freeze_convE = (utils.checkattr(args, "freeze_convE") and hasattr(args, "depth") and args.depth>0)
 
@@ -349,6 +352,10 @@ def train_cl(model, train_datasets, model_name, shift, slot, replay_mode="none",
             model.compute_means = True
 
         # Calculate statistics required for metrics
+
+        #jd's change to measure time only
+        metric_cbs=list()
+
         for metric_cb in metric_cbs:
             if metric_cb is not None:
                 metric_cb(model, iters, task=task)
