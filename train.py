@@ -100,7 +100,14 @@ def train_cl(model, train_datasets, model_name, shift, slot, replay_mode="none",
 
     #jd's change to measure time
     eval_cbs=list()
-    
+    iter_jd = list(
+        range(
+            5000,
+            0,
+            -500
+        )
+    )
+
     # Should convolutional layers be frozen?
     freeze_convE = (utils.checkattr(args, "freeze_convE") and hasattr(args, "depth") and args.depth>0)
 
@@ -130,6 +137,8 @@ def train_cl(model, train_datasets, model_name, shift, slot, replay_mode="none",
     start_time = time.time()
     for task, train_dataset in enumerate(train_datasets, 1):
 
+        #jd's change to measure time complexity
+        iters = iter_jd[task-1]
         # In offline replay-setting, all tasks so far should be visited separately (i.e., separate data-loader per task)
         if replay_mode=="offline":
             Offline_TaskIL = True
