@@ -125,84 +125,83 @@ def plot_TEs_twice(ftes, btes, tes, ftes2, btes2, tes2, alg_name,
     fig.legend(handles, labels_, bbox_to_anchor=(.99, .93), fontsize=legendsize + 5, frameon=False)
 
 
-    # Forward Transfer Efficiency (bottom)
-    ax = fig.add_subplot(gs[10:17, :7])
-    for i, fte in enumerate(ftes2):
-        ax.plot(np.arange(1, 1+task_num), fte, color=clr_palette[i], marker='.', markersize=12, label=alg_name[i])
-    ax.set_xticks(np.arange(1, 1+task_num))
-    ax.set_yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4])
-    if y_lim is not None:
-        ax.set_ylim(y_lim)
-    ax.tick_params(labelsize=ticksize)
-    ax.set_ylabel('Forward Transfer Efficiency (FTE)', fontsize=fontsize)
-    ax.set_xlabel('Number of tasks seen', fontsize=fontsize)
-    right_side = ax.spines["right"]
-    right_side.set_visible(False)
-    top_side = ax.spines["top"]
-    top_side.set_visible(False)
-    ax.hlines(1, 1, 10, colors='grey', linestyles='dashed', linewidth=1.5)
+    # # Forward Transfer Efficiency (bottom)
+    # ax = fig.add_subplot(gs[10:17, :7])
+    # for i, fte in enumerate(ftes2):
+    #     ax.plot(np.arange(1, 1+task_num), fte, color=clr_palette[i], marker='.', markersize=12, label=alg_name[i])
+    # ax.set_xticks(np.arange(1, 1+task_num))
+    # ax.set_yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4])
+    # if y_lim is not None:
+    #     ax.set_ylim(y_lim)
+    # ax.tick_params(labelsize=ticksize)
+    # ax.set_ylabel('Forward Transfer Efficiency (FTE)', fontsize=fontsize)
+    # ax.set_xlabel('Number of tasks seen', fontsize=fontsize)
+    # right_side = ax.spines["right"]
+    # right_side.set_visible(False)
+    # top_side = ax.spines["top"]
+    # top_side.set_visible(False)
+    # ax.hlines(1, 1, 10, colors='grey', linestyles='dashed', linewidth=1.5)
 
-    # Backward Transfer Efficiency bottom)
-    ax = fig.add_subplot(gs[10:17, 9:16])
-    for i in range(task_num - 1):
-        ns = np.arange(i + 1, task_num + 1)
-        for j in range(0, total_alg):
-            if i == 0:
-                ax.plot(ns, btes2[j][i], marker='.', markersize=8, label=alg_name[j], color=clr_palette[j])
-            else:
-                ax.plot(ns, btes2[j][i], marker='.', markersize=8, color=clr_palette[j])
-    ax.set_xlabel('Number of tasks seen', fontsize=fontsize)
-    ax.set_ylabel('Backward Transfer Efficiency (BTE)', fontsize=fontsize)
-    ax.set_yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4])
-    ax.set_xticks(np.arange(1, task_num))
-    if y_lim is not None:
-        ax.set_ylim(y_lim)
-    ax.tick_params(labelsize=ticksize)
-    right_side = ax.spines["right"]
-    right_side.set_visible(False)
-    top_side = ax.spines["top"]
-    top_side.set_visible(False)
-    ax.hlines(1, 1, 10, colors='grey', linestyles='dashed', linewidth=1.5)
-    ax.set_title(bottom_title, fontsize=22, fontweight='bold')
+    # # Backward Transfer Efficiency bottom)
+    # ax = fig.add_subplot(gs[10:17, 9:16])
+    # for i in range(task_num - 1):
+    #     ns = np.arange(i + 1, task_num + 1)
+    #     for j in range(0, total_alg):
+    #         if i == 0:
+    #             ax.plot(ns, btes2[j][i], marker='.', markersize=8, label=alg_name[j], color=clr_palette[j])
+    #         else:
+    #             ax.plot(ns, btes2[j][i], marker='.', markersize=8, color=clr_palette[j])
+    # ax.set_xlabel('Number of tasks seen', fontsize=fontsize)
+    # ax.set_ylabel('Backward Transfer Efficiency (BTE)', fontsize=fontsize)
+    # ax.set_yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4])
+    # ax.set_xticks(np.arange(1, task_num))
+    # if y_lim is not None:
+    #     ax.set_ylim(y_lim)
+    # ax.tick_params(labelsize=ticksize)
+    # right_side = ax.spines["right"]
+    # right_side.set_visible(False)
+    # top_side = ax.spines["top"]
+    # top_side.set_visible(False)
+    # ax.hlines(1, 1, 10, colors='grey', linestyles='dashed', linewidth=1.5)
+    # ax.set_title(bottom_title, fontsize=22, fontweight='bold')
 
-    # Transfer Efficiency (bottom)
-    te_dict = {}
-    short_names = alg_name if short_names is None else short_names
-    for name in alg_name:
-        te_dict[name] = np.zeros(task_num, dtype=float)
-    for count, te in enumerate(tes2):
-        for i in range(task_num):
-            te_dict[alg_name[count]][i] = te[i]
-    df = pd.DataFrame.from_dict(te_dict)
-    df = df[alg_name]
-    df = pd.melt(df, var_name='Algorithms', value_name='Transfer Efficieny')
-    ax = fig.add_subplot(gs[10:17, 18:23])
-    ax.tick_params(labelsize=22)
-    ax_ = sns.boxplot(
-        x="Algorithms", y="Transfer Efficieny", data=df, palette=clr_palette, whis=np.inf,
-        ax=ax, showfliers=False, notch=1
-    )
-    ax.hlines(1, -1, 8, colors='grey', linestyles='dashed', linewidth=1.5)
-    ax_.set_xlabel('', fontsize=fontsize)
-    ax.set_ylabel('Transfer Efficiency after 10 Tasks', fontsize=fontsize)
-    ax_.set_xticklabels(
-        short_names,
-        fontsize=14, rotation=45, ha="right", rotation_mode='anchor'
-    )
-    if y_lim is not None:
-        ax.set_ylim(y_lim)
-    stratified_scatter(te_dict, ax, 16, names=alg_name)
-    right_side = ax.spines["right"]
-    right_side.set_visible(False)
-    top_side = ax.spines["top"]
-    top_side.set_visible(False)
+    # # Transfer Efficiency (bottom)
+    # te_dict = {}
+    # short_names = alg_name if short_names is None else short_names
+    # for name in alg_name:
+    #     te_dict[name] = np.zeros(task_num, dtype=float)
+    # for count, te in enumerate(tes2):
+    #     for i in range(task_num):
+    #         te_dict[alg_name[count]][i] = te[i]
+    # df = pd.DataFrame.from_dict(te_dict)
+    # df = df[alg_name]
+    # df = pd.melt(df, var_name='Algorithms', value_name='Transfer Efficieny')
+    # ax = fig.add_subplot(gs[10:17, 18:23])
+    # ax.tick_params(labelsize=22)
+    # ax_ = sns.boxplot(
+    #     x="Algorithms", y="Transfer Efficieny", data=df, palette=clr_palette, whis=np.inf,
+    #     ax=ax, showfliers=False, notch=1
+    # )
+    # ax.hlines(1, -1, 8, colors='grey', linestyles='dashed', linewidth=1.5)
+    # ax_.set_xlabel('', fontsize=fontsize)
+    # ax.set_ylabel('Transfer Efficiency after 10 Tasks', fontsize=fontsize)
+    # ax_.set_xticklabels(
+    #     short_names,
+    #     fontsize=14, rotation=45, ha="right", rotation_mode='anchor'
+    # )
+    # if y_lim is not None:
+    #     ax.set_ylim(y_lim)
+    # stratified_scatter(te_dict, ax, 16, names=alg_name)
+    # right_side = ax.spines["right"]
+    # right_side.set_visible(False)
+    # top_side = ax.spines["top"]
+    # top_side.set_visible(False)
 
     # Save or return figure
     if plot_name is not None:
         plt.savefig(plot_name)
     else:
         return fig
-
 
 
 def plot_TEs(ftes, btes, tes, alg_name, task_num=10, plot_name=None, y_lim=None):
