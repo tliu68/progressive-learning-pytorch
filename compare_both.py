@@ -256,7 +256,7 @@ if __name__ == '__main__':
         #                      LWF[seed][i], EXACT[seed][i]]
 
         i = 0
-        ave_prec_p[seed] = [OEWCp[seed][i]
+        ave_prec_p[seed] = [OEWCp[seed][i]]
 
         i = 1
         metric_dict_p[seed] = [OEWCp[seed][i]]
