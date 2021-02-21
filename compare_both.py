@@ -131,19 +131,19 @@ if __name__ == '__main__':
     #--------------------------#
 
     #jd's change
-    seed_list = list(range(args.seed, args.seed+10))
+    seed_list = list(range(args.seed, args.seed+1))
 
-    ###----"Re-init"----###
-    args.reinit = True
-    REINIT = {}
-    #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
-    args.max_samples = 250
-    args.iters = 2500
-    REINITp = {}
-    REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
-    args.max_samples = None
-    args.iters = 5000
-    args.reinit = False
+    # ###----"Re-init"----###
+    # args.reinit = True
+    # REINIT = {}
+    # #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
+    # args.max_samples = 250
+    # args.iters = 2500
+    # REINITp = {}
+    # REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
+    # args.max_samples = None
+    # args.iters = 5000
+    # args.reinit = False
 
     # ## None
     # args.replay = "none"
@@ -240,28 +240,26 @@ if __name__ == '__main__':
     #----- COLLECT RESULTS -----#
     #---------------------------#
 
-    ave_prec = {}
-    metric_dict = {}
+    # ave_prec = {}
+    # metric_dict = {}
     ave_prec_p = {}
     metric_dict_p = {}
 
     ## For each seed, create list with average precisions
     for seed in seed_list:
+        # i = 0
+        # ave_prec[seed] = [OFF[seed][i], NONE[seed][i], EWC[seed][i], OEWC[seed][i], SI[seed][i],
+        #                   LWF[seed][i], EXACT[seed][i]]
+
+        # i = 1
+        # metric_dict[seed] = [OFF[seed][i], NONE[seed][i], EWC[seed][i], OEWC[seed][i], SI[seed][i],
+        #                      LWF[seed][i], EXACT[seed][i]]
+
         i = 0
-        ave_prec[seed] = [OFF[seed][i], NONE[seed][i], EWC[seed][i], OEWC[seed][i], SI[seed][i],
-                          LWF[seed][i], EXACT[seed][i]]
+        ave_prec_p[seed] = [OEWCp[seed][i]
 
         i = 1
-        metric_dict[seed] = [OFF[seed][i], NONE[seed][i], EWC[seed][i], OEWC[seed][i], SI[seed][i],
-                             LWF[seed][i], EXACT[seed][i]]
-
-        i = 0
-        ave_prec_p[seed] = [OFFp[seed][i], NONEp[seed][i], EWCp[seed][i], OEWCp[seed][i], SIp[seed][i],
-                            LWFp[seed][i], EXACTp[seed][i]]
-
-        i = 1
-        metric_dict_p[seed] = [OFFp[seed][i], NONEp[seed][i], EWCp[seed][i], OEWCp[seed][i], SIp[seed][i],
-                               LWFp[seed][i], EXACTp[seed][i]]
+        metric_dict_p[seed] = [OEWCp[seed][i]]
 
 
     #-------------------------------------------------------------------------------------------------#
@@ -282,7 +280,7 @@ if __name__ == '__main__':
     names = ["Online EWC"]
     short_names = ["Online EWC"]
     colors = ["darkblue"]
-    ids = [3]
+    ids = [0]
 
     # open pdf
     pp = visual_plt.open_pdf("{}/{}.pdf".format(args.p_dir, plot_name))
@@ -290,16 +288,16 @@ if __name__ == '__main__':
 
     # print average accuracy
     # -not pretrained
-    means = [np.mean([ave_prec[seed][id] for seed in seed_list]) for id in ids]
-    if len(seed_list)>1:
-        sems = [np.sqrt(np.var([ave_prec[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
-    print("\n\n"+"#"*60+"\nSUMMARY RESULTS: {}\n".format(title)+"-"*60)
-    for i,name in enumerate(short_names):
-        if len(seed_list) > 1:
-            print("{:22s} {:.2f}  (+/- {:.2f}),  n={}".format(name, 100*means[i], 100*sems[i], len(seed_list)))
-        else:
-            print("{:22s} {:.2f}".format(name, 100*means[i]))
-    print("#"*60)
+    # means = [np.mean([ave_prec[seed][id] for seed in seed_list]) for id in ids]
+    # if len(seed_list)>1:
+    #     sems = [np.sqrt(np.var([ave_prec[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
+    # print("\n\n"+"#"*60+"\nSUMMARY RESULTS: {}\n".format(title)+"-"*60)
+    # for i,name in enumerate(short_names):
+    #     if len(seed_list) > 1:
+    #         print("{:22s} {:.2f}  (+/- {:.2f}),  n={}".format(name, 100*means[i], 100*sems[i], len(seed_list)))
+    #     else:
+    #         print("{:22s} {:.2f}".format(name, 100*means[i]))
+    # print("#"*60)
     # -pretrained
     means = [np.mean([ave_prec_p[seed][id] for seed in seed_list]) for id in ids]
     if len(seed_list)>1:
@@ -317,26 +315,26 @@ if __name__ == '__main__':
     BTEs = []
     FTEs = []
     TEs = []
-    for id in ids:
-        BTEs_this_alg = []
-        FTEs_this_alg = []
-        TEs_this_alg = []
-        for seed in seed_list:
-            R = metric_dict[seed][id]['R']
-            TEs_this_alg_this_seed = R.loc['TEs (per task, after all 10 tasks)']
-            FTEs_this_alg_this_seed = R.loc['FTEs (per task)']
-            BTEs_this_alg_this_seed = []
-            for task_id in range(args.tasks):
-                BTEs_this_alg_this_seed.append(
-                    [R.loc['BTEs (per task, after {} tasks)'.format(after_task_id + 1), 'task {}'.format(task_id + 1)] for
-                     after_task_id in range(task_id, args.tasks)]
-                )
-                BTEs_this_alg.append(BTEs_this_alg_this_seed)
-                FTEs_this_alg.append(FTEs_this_alg_this_seed)
-                TEs_this_alg.append(TEs_this_alg_this_seed)
-        BTEs.append(calc_mean_bte(BTEs_this_alg, task_num=args.tasks, reps=len(seed_list)))
-        FTEs.append(calc_mean_te(FTEs_this_alg))
-        TEs.append(calc_mean_te(TEs_this_alg))
+    # for id in ids:
+    #     BTEs_this_alg = []
+    #     FTEs_this_alg = []
+    #     TEs_this_alg = []
+    #     for seed in seed_list:
+    #         R = metric_dict[seed][id]['R']
+    #         TEs_this_alg_this_seed = R.loc['TEs (per task, after all 10 tasks)']
+    #         FTEs_this_alg_this_seed = R.loc['FTEs (per task)']
+    #         BTEs_this_alg_this_seed = []
+    #         for task_id in range(args.tasks):
+    #             BTEs_this_alg_this_seed.append(
+    #                 [R.loc['BTEs (per task, after {} tasks)'.format(after_task_id + 1), 'task {}'.format(task_id + 1)] for
+    #                  after_task_id in range(task_id, args.tasks)]
+    #             )
+    #             BTEs_this_alg.append(BTEs_this_alg_this_seed)
+    #             FTEs_this_alg.append(FTEs_this_alg_this_seed)
+    #             TEs_this_alg.append(TEs_this_alg_this_seed)
+    #     BTEs.append(calc_mean_bte(BTEs_this_alg, task_num=args.tasks, reps=len(seed_list)))
+    #     FTEs.append(calc_mean_te(FTEs_this_alg))
+    #     TEs.append(calc_mean_te(TEs_this_alg))
     # -collect pretrained
     BTEsp = []
     FTEsp = []
