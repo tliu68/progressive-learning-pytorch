@@ -133,17 +133,17 @@ if __name__ == '__main__':
     #jd's change
     seed_list = list(range(args.seed, args.seed+1))
 
-    # ###----"Re-init"----###
-    # args.reinit = True
-    # REINIT = {}
-    # #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
-    # args.max_samples = 250
-    # args.iters = 2500
-    # REINITp = {}
-    # REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
-    # args.max_samples = None
-    # args.iters = 5000
-    # args.reinit = False
+    ###----"Re-init"----###
+    args.reinit = True
+    REINIT = {}
+    #REINIT = collect_all(REINIT, seed_list, args, name="Only train on each individual task (using 'reinit')")
+    args.max_samples = 250
+    args.iters = 2500
+    REINITp = {}
+    REINITp = collect_all(REINITp, seed_list, args, name="Only train on each individual task (using 'reinit' - 500 samples)")
+    args.max_samples = None
+    args.iters = 5000
+    args.reinit = False
 
     # ## None
     # args.replay = "none"
