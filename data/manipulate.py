@@ -11,22 +11,22 @@ from skimage.util import img_as_ubyte
 #jd's function
 #class _image_aug:
 
-# def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
-#     pic = pic.unsqueeze_(0)[0]
-#     im_sz = int(np.floor(pic.shape[1]*scale))
-#     pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
+def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+    pic = pic.unsqueeze_(0)[0]
+    im_sz = int(np.floor(pic.shape[1]*scale))
+    pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
 
-#     pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
+    pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
 
-#     pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
-#     pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
+    pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
+    pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
 
-#     image_aug = rotate(pic_, angle, resize=False)
-#     #print(image_aug.shape)
-#     image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
-#     image_aug_ = image_aug_.reshape(3,32,32)
+    image_aug = rotate(pic_, angle, resize=False)
+    #print(image_aug.shape)
+    image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+    image_aug_ = image_aug_.reshape(3,32,32)
 
-#     return image_aug_
+    return image_aug_
 
 # running SimpleElastix to deform rotated image -- TL
 
@@ -62,24 +62,24 @@ def run_elastix(template, target, ite):
     return RegIm_array
 
 
-def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
-    pic = pic.unsqueeze_(0)[0]
-    im_sz = int(np.floor(pic.shape[1]*scale))
-    pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
+# def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+#     pic = pic.unsqueeze_(0)[0]
+#     im_sz = int(np.floor(pic.shape[1]*scale))
+#     pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
 
-    pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
-    pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
-    pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
+#     pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
+#     pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
+#     pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
     
-    template = pic_
-    image_aug = rotate(pic_, angle, resize=False)
-    target = image_aug
+#     template = pic_
+#     image_aug = rotate(pic_, angle, resize=False)
+#     target = image_aug
     
-    image_reg_ = run_elastix(template=template, target=target, ite='1500')
-    image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
-    image_reg_ = image_reg_.reshape(3,32,32)
+#     image_reg_ = run_elastix(template=template, target=target, ite='1500')
+#     image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+#     image_reg_ = image_reg_.reshape(3,32,32)
 
-    return image_reg_
+#     return image_reg_
 
 #jd's version to manipulate the data
 class GetSlotDataset(Dataset):
