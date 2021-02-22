@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 import numpy as np
+import pickle
 
 
 from skimage.transform import rotate
@@ -180,6 +181,12 @@ class GetAngleDataset(Dataset):
             lbl = sample[1]
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         
+        pickle_out = open("GetAngleDataset-sample_.pickle", "wb")
+        pickle.dump(sample_, pickle_out)
+        pickle_out.close()
+        pickle_out = open("GetAngleDataset-lbl.pickle", "wb")
+        pickle.dump(lbl, pickle_out)
+        pickle_out.close()
         return (sample_, lbl)
 
 
