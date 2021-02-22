@@ -365,6 +365,7 @@ if __name__ == '__main__':
                                        bottom_title="5000 training samples per task",
                                        short_names=short_names, task_num=args.tasks, y_lim=(0.58, 1.32),
                                        colors=colors)
+    print(BTEsp, 'BETsp')
     figure_list.append(figure)
 
 
