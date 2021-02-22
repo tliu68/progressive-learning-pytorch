@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 import pickle
-
+import SimpleITK as sitk
 
 from skimage.transform import rotate
 from scipy import ndimage
@@ -11,22 +11,75 @@ from skimage.util import img_as_ubyte
 #jd's function
 #class _image_aug:
 
+# def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+#     pic = pic.unsqueeze_(0)[0]
+#     im_sz = int(np.floor(pic.shape[1]*scale))
+#     pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
+
+#     pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
+
+#     pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
+#     pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
+
+#     image_aug = rotate(pic_, angle, resize=False)
+#     #print(image_aug.shape)
+#     image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+#     image_aug_ = image_aug_.reshape(3,32,32)
+
+#     return image_aug_
+
+# running SimpleElastix to deform rotated image -- TL
+
+
+def run_elastix(template, target, ite):
+    elastixImageFilter = sitk.ElastixImageFilter()
+    elastixImageFilter.SetFixedImage(sitk.GetImageFromArray(template))
+    elastixImageFilter.SetMovingImage(sitk.GetImageFromArray(target))
+    ParamMap = sitk.GetDefaultParameterMap('affine')
+    ParamMap['AutomaticTransformInitialization'] = ['true']
+    ParamMap['AutomaticTransformInitializationMethod'] = ['GeometricalCenter']
+    ParamMap['MaximumNumberOfIterations'] = [ite]
+    ParamMap['UseDirectionCosines'] = ['true']
+    ParamMap["FixedImagePyramid"] = ["FixedShrinkingImagePyramid"] 
+    ParamMap["MovingImagePyramid"] = ["MovingShrinkingImagePyramid"] 
+    ParamMap["Transform"] = ["EulerTransform"]
+    ParamMap['AutomaticScalesEstimation'] = ["false"]
+    ParamMap['Scales'] = ['1']
+    ParamMap['SP_A'] = ['50']
+    ParamMap['SP_alpha'] = ['0.6']
+    ParamMap['NewSamplesEveryIteration'] = ['true']
+    ParamMap['NumberOfResolutions'] = ['4']
+    ParamMap['MaximumStepLength'] = ['1.0']
+    # Set the parameter map:
+    elastixImageFilter.SetParameterMap(ParamMap)
+
+    # Register the 3D images:
+    elastixImageFilter.Execute()
+
+    # Get the registered image:
+    RegIm = elastixImageFilter.GetResultImage()
+    RegIm_array = sitk.GetArrayFromImage(RegIm)
+    return RegIm_array
+
+
 def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
     pic = pic.unsqueeze_(0)[0]
     im_sz = int(np.floor(pic.shape[1]*scale))
     pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
 
     pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
-
     pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
     pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
-
+    
+    template = pic_
     image_aug = rotate(pic_, angle, resize=False)
-    #print(image_aug.shape)
-    image_aug_ = image_aug[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
-    image_aug_ = image_aug_.reshape(3,32,32)
+    target = image_aug
+    
+    image_reg_ = run_elastix(template=template, target=target, ite='1500')
+    image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+    image_reg_ = image_reg_.reshape(3,32,32)
 
-    return image_aug_
+    return image_reg_
 
 #jd's version to manipulate the data
 class GetSlotDataset(Dataset):
@@ -161,39 +214,23 @@ class GetAngleDataset(Dataset):
     def __getitem__(self, index):
         
         if index >= 2500 and self.type == 'train':
-            print('1')
             sample = self.dataset[self.indeces2[index-2500]]
-            pickle_out = open("GetAngleDataset-sample1.pickle", "wb")
-            pickle.dump(sample, pickle_out)
-            pickle_out.close()
             lbl = sample[1] + 10
             sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
             #print(type(sample[1]))
         elif self.type == 'train':
-            print('2')
             sample = self.dataset[self.indeces1[index]]
-            pickle_out = open("GetAngleDataset-sample2.pickle", "wb")
-            pickle.dump(sample, pickle_out)
-            pickle_out.close()
             lbl = sample[1]
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         elif index>=1000 and self.type == 'test':
-            print('3')
             #print(len(self.indeces2), index, 'hi')
             sample = self.dataset[self.indeces2[index-1000]]
-            pickle_out = open("GetAngleDataset-sample3.pickle", "wb")
-            pickle.dump(sample, pickle_out)
-            pickle_out.close()
             lbl = sample[1] + 10
 
             #print(lbl)
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         else:
-            print(4)
             sample = self.dataset[self.indeces1[index]]
-            pickle_out = open("GetAngleDataset-sample4.pickle", "wb")
-            pickle.dump(sample, pickle_out)
-            pickle_out.close()
             lbl = sample[1]
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         
