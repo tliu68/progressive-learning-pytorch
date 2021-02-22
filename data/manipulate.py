@@ -161,32 +161,42 @@ class GetAngleDataset(Dataset):
     def __getitem__(self, index):
         
         if index >= 2500 and self.type == 'train':
+            print('1')
             sample = self.dataset[self.indeces2[index-2500]]
+            pickle_out = open("GetAngleDataset-sample1.pickle", "wb")
+            pickle.dump(sample, pickle_out)
+            pickle_out.close()
             lbl = sample[1] + 10
             sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
             #print(type(sample[1]))
         elif self.type == 'train':
+            print('2')
             sample = self.dataset[self.indeces1[index]]
+            pickle_out = open("GetAngleDataset-sample2.pickle", "wb")
+            pickle.dump(sample, pickle_out)
+            pickle_out.close()
             lbl = sample[1]
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         elif index>=1000 and self.type == 'test':
+            print('3')
             #print(len(self.indeces2), index, 'hi')
             sample = self.dataset[self.indeces2[index-1000]]
+            pickle_out = open("GetAngleDataset-sample3.pickle", "wb")
+            pickle.dump(sample, pickle_out)
+            pickle_out.close()
             lbl = sample[1] + 10
 
             #print(lbl)
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         else:
+            print(4)
             sample = self.dataset[self.indeces1[index]]
+            pickle_out = open("GetAngleDataset-sample4.pickle", "wb")
+            pickle.dump(sample, pickle_out)
+            pickle_out.close()
             lbl = sample[1]
             sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
         
-        pickle_out = open("GetAngleDataset-sample_.pickle", "wb")
-        pickle.dump(sample_, pickle_out)
-        pickle_out.close()
-        pickle_out = open("GetAngleDataset-lbl.pickle", "wb")
-        pickle.dump(lbl, pickle_out)
-        pickle_out.close()
         return (sample_, lbl)
 
 
