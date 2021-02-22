@@ -365,12 +365,12 @@ if __name__ == '__main__':
                                        bottom_title="5000 training samples per task",
                                        short_names=short_names, task_num=args.tasks, y_lim=(0.58, 1.32),
                                        colors=colors)
-    print(BTEsp, 'BETsp')
-    print(FTEsp, 'FETsp')
+    print(BTEsp, 'BTEsp')
+    print(FTEsp, 'FTEsp')
     print(TEsp, 'ETsp')
     param_stamp = get_param_stamp_from_args(args)
     output_file = open("{}/BTEsp-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), 'w')
-    output_file.write('{}\n'.format(BETsp))
+    output_file.write('{}\n'.format(BTEsp))
     output_file.close()
     figure_list.append(figure)
 
