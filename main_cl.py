@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import torch
 from torch import optim
+import pickle
 
 # -custom-written libraries
 import options
@@ -85,6 +86,9 @@ def run(args, verbose=False):
         verbose=verbose, exception=True if args.seed<10 else False, only_test=(not args.train),
         max_samples=args.max_samples
     )
+    pickle_out = open("get_multitask_experiment.pickle", "wb")
+    pickle.dump(((train_datasets, test_datasets), config, classes_per_task), pickle_out)
+    pickle_out.close()
 
 
     #-------------------------------------------------------------------------------------------------#
