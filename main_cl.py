@@ -86,9 +86,6 @@ def run(args, verbose=False):
         verbose=verbose, exception=True if args.seed<10 else False, only_test=(not args.train),
         max_samples=args.max_samples
     )
-    pickle_out = open("get_multitask_experiment.pickle", "wb")
-    pickle.dump((train_datasets[0], test_datasets[0], train_datasets[0].data.numpy()), pickle_out)
-    pickle_out.close()
 
 
     #-------------------------------------------------------------------------------------------------#
