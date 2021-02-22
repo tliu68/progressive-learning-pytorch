@@ -396,13 +396,13 @@ def run(args, verbose=False):
     #------------------#
 
     # Average precision on full test set
-    output_file = open("{}/prec-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), 'w')
-    output_file.write('{}\n'.format(average_precs_ex if args.use_exemplars else average_precs))
-    output_file.close()
-    # -metrics-dict
-    if args.metrics:
-        file_name = "{}/dict-{}-{}".format(args.r_dir, param_stamp, args.angle)
-        utils.save_object(metrics_dict, file_name)
+    # output_file = open("{}/prec-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), 'w')
+    # output_file.write('{}\n'.format(average_precs_ex if args.use_exemplars else average_precs))
+    # output_file.close()
+    # # -metrics-dict
+    # if args.metrics:
+    #     file_name = "{}/dict-{}-{}".format(args.r_dir, param_stamp, args.angle)
+    #     utils.save_object(metrics_dict, file_name)
 
 
     #-------------------------------------------------------------------------------------------------#
