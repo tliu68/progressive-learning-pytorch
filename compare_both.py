@@ -370,7 +370,7 @@ if __name__ == '__main__':
     #                                    colors=colors)
 
     param_stamp = get_param_stamp_from_args(args)
-    output_file = open("{}/BTEsp-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), 'w')
+    output_file = open("{}/BTEsp-{}-{}-reg{}.txt".format(args.r_dir, param_stamp, args.angle, args.reg), 'w')
     output_file.write('{}\n'.format([BTEsp, FTEsp, TEsp]))
     output_file.close()
     # figure_list.append(figure)
