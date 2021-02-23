@@ -34,10 +34,6 @@ def get_dataset(name, angle=0, type='train', download=True, capacity=None, permu
                 with open('rotated_fig.pickle','wb') as f:
                     pickle.dump(dataset_train[10], f)'''
 
-    pickle_out = open("load-dataset_train-test.pickle", "wb")
-    pickle.dump(((train_datasets, test_datasets), config, classes_per_task), pickle_out)
-    pickle_out.close()
-
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
     #print(dataset[10], 'kukuta')
