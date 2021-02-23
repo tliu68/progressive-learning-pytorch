@@ -131,7 +131,8 @@ if __name__ == '__main__':
     #--------------------------#
 
     #jd's change
-    seed_list = list(range(args.seed, args.seed+1))
+    # seed_list = list(range(args.seed, args.seed+1))
+    seed_list = list(range(args.seed, args.seed+args.n_seeds))
 
     ###----"Re-init"----###
     args.reinit = True
