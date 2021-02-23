@@ -6,6 +6,7 @@ import visual.plt as visual_plt
 import main_cl
 import options
 import utils
+import pickle
 
 
 ## Function for specifying input-options and organizing / checking them
@@ -283,9 +284,9 @@ if __name__ == '__main__':
     colors = ["darkblue"]
     ids = [0]
 
-    # open pdf
-    pp = visual_plt.open_pdf("{}/{}.pdf".format(args.p_dir, plot_name))
-    figure_list = []
+    # # open pdf
+    # pp = visual_plt.open_pdf("{}/{}.pdf".format(args.p_dir, plot_name))
+    # figure_list = []
 
     # print average accuracy
     # -not pretrained
@@ -361,27 +362,28 @@ if __name__ == '__main__':
         FTEsp.append(calc_mean_te(FTEs_this_alg))
         TEsp.append(calc_mean_te(TEs_this_alg))
     # -make plot
-    figure = visual_plt.plot_TEs_twice(FTEsp, BTEsp, TEsp, FTEs, BTEs, TEs, names,
-                                       top_title="500 training samples per task",
-                                       bottom_title="5000 training samples per task",
-                                       short_names=short_names, task_num=args.tasks, y_lim=(0.58, 1.32),
-                                       colors=colors)
+    # figure = visual_plt.plot_TEs_twice(FTEsp, BTEsp, TEsp, FTEs, BTEs, TEs, names,
+    #                                    top_title="500 training samples per task",
+    #                                    bottom_title="5000 training samples per task",
+    #                                    short_names=short_names, task_num=args.tasks, y_lim=(0.58, 1.32),
+    #                                    colors=colors)
     print(BTEsp, 'BTEsp')
     print(FTEsp, 'FTEsp')
     print(TEsp, 'ETsp')
     param_stamp = get_param_stamp_from_args(args)
-    output_file = open("{}/BTEsp-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), 'w')
-    output_file.write('{}\n'.format(BTEsp))
-    output_file.close()
-    figure_list.append(figure)
+    # output_file = open("{}/BTEsp-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), 'w')
+    pickle_out = open("{}/all_TEsp-{}-{}.txt".format(args.r_dir, param_stamp, args.angle), "wb")
+    pickle.dump([BTEsp, FTEsp, TEsp], pickle_out)
+    pickle_out.close()
+    # figure_list.append(figure)
 
 
     # add all figures to pdf
-    for figure in figure_list:
-        pp.savefig(figure)
+    # for figure in figure_list:
+    #     pp.savefig(figure)
 
     # close the pdf
-    pp.close()
+    # pp.close()
 
     # Print name of generated plot on screen
     print("\nGenerated plot: {}/{}.pdf\n".format(args.p_dir, plot_name))
