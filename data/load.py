@@ -8,7 +8,7 @@ from os import path
 import pickle 
 
 def get_dataset(name, angle=0, type='train', download=True, capacity=None, permutation=None, dir='./store/datasets',
-                verbose=False, augment=False, normalize=False, target_transform=None, valid_prop=0.):
+                verbose=False, augment=False, normalize=False, target_transform=None, reg=False, valid_prop=0.):
     '''Create [train|valid|test]-dataset.'''
 
     data_name = 'mnist' if name in ('mnist28') else name
@@ -34,11 +34,18 @@ def get_dataset(name, angle=0, type='train', download=True, capacity=None, permu
                 with open('rotated_fig.pickle','wb') as f:
                     pickle.dump(dataset_train[10], f)'''
 
+    pickle_out = open("load-dataset_train-test.pickle", "wb")
+    pickle.dump(((train_datasets, test_datasets), config, classes_per_task), pickle_out)
+    pickle_out.close()
+
     #JD's change
     dataset = ConcatDataset([dataset_train, dataset_test])
     #print(dataset[10], 'kukuta')
     #dataset = GetSlotDataset(dataset, slot=slot, shift=shift, type=type)
-    dataset = GetAngleDataset(dataset, type=type, angle=angle)
+    if not reg:
+        dataset = GetAngleDataset(dataset, type=type, angle=angle)
+    else:
+        dataset = GetAngleDataset(dataset, type=type, angle=angle, reg=True)
 
     #############
 
@@ -98,7 +105,7 @@ def get_singletask_experiment(name, data_dir="./store/datasets", normalize=False
 
 
 def get_multitask_experiment(name, tasks, angle, data_dir="./store/datasets", normalize=False, augment=False,
-                             only_config=False, verbose=False, exception=False, only_test=False, max_samples=None):
+                             only_config=False, verbose=False, exception=False, only_test=False, max_samples=None, reg=False):
     '''Load, organize and return train- and test-dataset for requested multi-task experiment.'''
     #print('max sample is '+str(max_samples))
     ## NOTE: option 'normalize' and 'augment' only implemented for CIFAR-based experiments.
@@ -176,10 +183,18 @@ def get_multitask_experiment(name, tasks, angle, data_dir="./store/datasets", no
             target_transform = transforms.Lambda(lambda y, x=permutation: int(permutation[y]))
             # prepare train and test datasets with all classes
             if not only_test:
-                cifar100_train = get_dataset('cifar100', angle=angle, type="train", dir=data_dir, normalize=normalize,
-                                             augment=augment, target_transform=target_transform, verbose=verbose)
-            cifar100_test = get_dataset('cifar100', angle=angle, type="test", dir=data_dir, normalize=normalize,
+                if not reg:
+                    cifar100_train = get_dataset('cifar100', angle=angle, type="train", dir=data_dir, normalize=normalize,
+                                        augment=augment, target_transform=target_transform, verbose=verbose)
+                else:
+                    cifar100_train = get_dataset('cifar100', angle=angle, type="train", dir=data_dir, normalize=normalize,
+                                        augment=augment, target_transform=target_transform, verbose=verbose, reg=True)
+            if not reg:
+                cifar100_test = get_dataset('cifar100', angle=angle, type="test", dir=data_dir, normalize=normalize,
                                         target_transform=target_transform, verbose=verbose)
+            else:
+                cifar100_test = get_dataset('cifar100', angle=angle, type="test", dir=data_dir, normalize=normalize,
+                                        target_transform=target_transform, verbose=verbose, reg=True)
             # generate labels-per-task
             labels_per_task = [
                 list(np.array(range(classes_per_task)) + classes_per_task * task_id) for task_id in range(tasks)
