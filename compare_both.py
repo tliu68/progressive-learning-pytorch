@@ -33,6 +33,7 @@ def handle_inputs():
                         help="--> Online EWC: reg strength with 500 training samples")
     parser.add_argument('--angle', metavar="LAMBDA", type=int,
                         help="-->angle: rotation angle for task 2")
+    parser.add_argument('--reg', type=bool, default=False)
 
     args = parser.parse_args()
     options.set_defaults(args, **kwargs)
