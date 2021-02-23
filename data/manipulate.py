@@ -50,36 +50,36 @@ def run_elastix(template, target, ite):
     ParamMap['NewSamplesEveryIteration'] = ['true']
     ParamMap['NumberOfResolutions'] = ['4']
     ParamMap['MaximumStepLength'] = ['1.0']
+    ParamMap['FinalGridSpacingInVoxels'] = ['8']
+    ParamMap['HowToCombineTransforms'] = ['compose']
     # Set the parameter map:
     elastixImageFilter.SetParameterMap(ParamMap)
-
     # Register the 3D images:
     elastixImageFilter.Execute()
-
     # Get the registered image:
     RegIm = elastixImageFilter.GetResultImage()
     RegIm_array = sitk.GetArrayFromImage(RegIm)
     return RegIm_array
 
 
-# def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
-#     pic = pic.unsqueeze_(0)[0]
-#     im_sz = int(np.floor(pic.shape[1]*scale))
-#     pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
+def _image_aug_reg(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
+    pic = pic.unsqueeze_(0)[0]
+    im_sz = int(np.floor(pic.shape[1]*scale))
+    pic_ = np.zeros((im_sz,im_sz,3),dtype=float)
 
-#     pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
-#     pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
-#     pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
+    pic_[:,:,0] = ndimage.zoom(pic[0,:,:],scale)
+    pic_[:,:,1] = ndimage.zoom(pic[1,:,:],scale)
+    pic_[:,:,2] = ndimage.zoom(pic[2,:,:],scale)
     
-#     template = pic_
-#     image_aug = rotate(pic_, angle, resize=False)
-#     target = image_aug
+    template = pic_
+    image_aug = rotate(pic_, angle, resize=False)
+    target = image_aug
     
-#     image_reg_ = run_elastix(template=template, target=target, ite='1500')
-#     image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
-#     image_reg_ = image_reg_.reshape(3,32,32)
+    image_reg_ = run_elastix(template=template, target=target, ite='1500')
+    image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
+    image_reg_ = image_reg_.reshape(3,32,32)
 
-#     return image_reg_
+    return image_reg_
 
 #jd's version to manipulate the data
 class GetSlotDataset(Dataset):
@@ -165,13 +165,14 @@ class GetShuffledDataset(Dataset):
  #jd's version to do rotation experiment on task 1 data
 class GetAngleDataset(Dataset):
 
-    def __init__(self, datatset_to_process, type='train', angle=0):
+    def __init__(self, datatset_to_process, type='train', angle=0, reg=False):
         super().__init__()
         self.dataset = datatset_to_process
         self.indeces1 = []
         self.indeces2 = []
         self.angle = angle
         self.type = type
+        self.reg = reg  # whether to perform image registration for domain adaptation -- TL
 
         label = np.asarray([lbl for _,lbl in self.dataset])
         idx = np.asarray([np.where(label==i) for i in range(10)])
@@ -216,23 +217,34 @@ class GetAngleDataset(Dataset):
         if index >= 2500 and self.type == 'train':
             sample = self.dataset[self.indeces2[index-2500]]
             lbl = sample[1] + 10
-            sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
+            if not self.reg:
+                sample_ = torch.from_numpy(_image_aug(sample[0], self.angle)).type(torch.FloatTensor)
+            else:
+                sample_ = torch.from_numpy(_image_aug_reg(sample[0], self.angle)).type(torch.FloatTensor)
             #print(type(sample[1]))
         elif self.type == 'train':
             sample = self.dataset[self.indeces1[index]]
             lbl = sample[1]
-            sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
+            if not self.reg:
+                sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
+            else:
+                sample_ = torch.from_numpy(_image_aug_reg(sample[0], 0)).type(torch.FloatTensor)
         elif index>=1000 and self.type == 'test':
             #print(len(self.indeces2), index, 'hi')
             sample = self.dataset[self.indeces2[index-1000]]
             lbl = sample[1] + 10
 
-            #print(lbl)
-            sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
+            if not self.reg:
+                sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
+            else:
+                sample_ = torch.from_numpy(_image_aug_reg(sample[0], 0)).type(torch.FloatTensor)
         else:
             sample = self.dataset[self.indeces1[index]]
             lbl = sample[1]
-            sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
+            if not self.reg:
+                sample_ = torch.from_numpy(_image_aug(sample[0], 0)).type(torch.FloatTensor)
+            else:
+                sample_ = torch.from_numpy(_image_aug_reg(sample[0], 0)).type(torch.FloatTensor)
         
         return (sample_, lbl)
 
