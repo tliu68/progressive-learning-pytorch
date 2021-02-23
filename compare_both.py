@@ -358,6 +358,7 @@ if __name__ == '__main__':
                 BTEs_this_alg.append(BTEs_this_alg_this_seed)
                 FTEs_this_alg.append(FTEs_this_alg_this_seed)
                 TEs_this_alg.append(TEs_this_alg_this_seed)
+        print(BTEsp)
         BTEsp.append(calc_mean_bte(BTEs_this_alg, task_num=args.tasks, reps=len(seed_list)))
         FTEsp.append(calc_mean_te(FTEs_this_alg))
         TEsp.append(calc_mean_te(TEs_this_alg))
