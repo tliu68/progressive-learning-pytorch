@@ -79,13 +79,22 @@ def run(args, verbose=False):
     # Prepare data for chosen experiment
     if verbose:
         print("\nPreparing the data...")
-    (train_datasets, test_datasets), config, classes_per_task = get_multitask_experiment(
-        name=args.experiment, tasks=args.tasks, angle=args.angle, data_dir=args.d_dir,
-        normalize=True if utils.checkattr(args, "normalize") else False,
-        augment=True if utils.checkattr(args, "augment") else False,
-        verbose=verbose, exception=True if args.seed<10 else False, only_test=(not args.train),
-        max_samples=args.max_samples
-    )
+    if not args.reg:
+        (train_datasets, test_datasets), config, classes_per_task = get_multitask_experiment(
+            name=args.experiment, tasks=args.tasks, angle=args.angle, data_dir=args.d_dir,
+            normalize=True if utils.checkattr(args, "normalize") else False,
+            augment=True if utils.checkattr(args, "augment") else False,
+            verbose=verbose, exception=True if args.seed<10 else False, only_test=(not args.train),
+            max_samples=args.max_samples
+        )
+    else:
+        (train_datasets, test_datasets), config, classes_per_task = get_multitask_experiment(
+            name=args.experiment, tasks=args.tasks, angle=args.angle, data_dir=args.d_dir,
+            normalize=True if utils.checkattr(args, "normalize") else False,
+            augment=True if utils.checkattr(args, "augment") else False,
+            verbose=verbose, exception=True if args.seed<10 else False, only_test=(not args.train),
+            max_samples=args.max_samples, reg=True
+        )
 
 
     #-------------------------------------------------------------------------------------------------#
