@@ -79,7 +79,7 @@ def run(args, verbose=False):
     # Prepare data for chosen experiment
     if verbose:
         print("\nPreparing the data...")
-    if not args.reg:
+    if args.reg is False:
         print("not args.reg")
         (train_datasets, test_datasets), config, classes_per_task = get_multitask_experiment(
             name=args.experiment, tasks=args.tasks, angle=args.angle, data_dir=args.d_dir,
