@@ -73,9 +73,12 @@ def _image_aug_reg(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45)
     
     template = pic_
     image_aug = rotate(pic_, angle, resize=False)
-    target = image_aug
+    target = image_aug.copy()
     
-    image_reg_ = run_elastix(template=template, target=target, ite='1500')
+    try:
+        image_reg_ = run_elastix(template=template, target=target, ite='1500')
+    except:
+        image_reg_ = target
     image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
     image_reg_ = image_reg_.reshape(3,32,32)
 
