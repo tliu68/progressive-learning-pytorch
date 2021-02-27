@@ -31,35 +31,35 @@ def _image_aug(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
 # running SimpleElastix to deform rotated image -- TL
 
 
-def run_elastix(template, target, ite):
-    elastixImageFilter = sitk.ElastixImageFilter()
-    elastixImageFilter.SetFixedImage(sitk.GetImageFromArray(template))
-    elastixImageFilter.SetMovingImage(sitk.GetImageFromArray(target))
-    ParamMap = sitk.GetDefaultParameterMap('affine')
-    ParamMap['AutomaticTransformInitialization'] = ['true']
-    ParamMap['AutomaticTransformInitializationMethod'] = ['GeometricalCenter']
-    ParamMap['MaximumNumberOfIterations'] = [ite]
-    ParamMap['UseDirectionCosines'] = ['true']
-    ParamMap["FixedImagePyramid"] = ["FixedShrinkingImagePyramid"] 
-    ParamMap["MovingImagePyramid"] = ["MovingShrinkingImagePyramid"] 
-    ParamMap["Transform"] = ["EulerTransform"]
-    ParamMap['AutomaticScalesEstimation'] = ["false"]
-    ParamMap['Scales'] = ['1']
-    ParamMap['SP_A'] = ['50']
-    ParamMap['SP_alpha'] = ['0.6']
-    ParamMap['NewSamplesEveryIteration'] = ['true']
-    ParamMap['NumberOfResolutions'] = ['4']
-    ParamMap['MaximumStepLength'] = ['1.0']
-    ParamMap['FinalGridSpacingInVoxels'] = ['8']
-    ParamMap['HowToCombineTransforms'] = ['compose']
-    # Set the parameter map:
-    elastixImageFilter.SetParameterMap(ParamMap)
-    # Register the 3D images:
-    elastixImageFilter.Execute()
-    # Get the registered image:
-    RegIm = elastixImageFilter.GetResultImage()
-    RegIm_array = sitk.GetArrayFromImage(RegIm)
-    return RegIm_array
+# def run_elastix(template, target, ite):
+#     elastixImageFilter = sitk.ElastixImageFilter()
+#     elastixImageFilter.SetFixedImage(sitk.GetImageFromArray(template))
+#     elastixImageFilter.SetMovingImage(sitk.GetImageFromArray(target))
+#     ParamMap = sitk.GetDefaultParameterMap('affine')
+#     ParamMap['AutomaticTransformInitialization'] = ['true']
+#     ParamMap['AutomaticTransformInitializationMethod'] = ['GeometricalCenter']
+#     ParamMap['MaximumNumberOfIterations'] = ['1']
+#     ParamMap['UseDirectionCosines'] = ['true']
+#     ParamMap["FixedImagePyramid"] = ["FixedShrinkingImagePyramid"] 
+#     ParamMap["MovingImagePyramid"] = ["MovingShrinkingImagePyramid"] 
+#     ParamMap["Transform"] = ["EulerTransform"]
+#     ParamMap['AutomaticScalesEstimation'] = ["false"]
+#     ParamMap['Scales'] = ['1']
+#     ParamMap['SP_A'] = ['50']
+#     ParamMap['SP_alpha'] = ['0.6']
+#     ParamMap['NewSamplesEveryIteration'] = ['true']
+#     ParamMap['NumberOfResolutions'] = ['4']
+#     ParamMap['MaximumStepLength'] = ['1.0']
+#     ParamMap['FinalGridSpacingInVoxels'] = ['8']
+#     ParamMap['HowToCombineTransforms'] = ['compose']
+#     # Set the parameter map:
+#     elastixImageFilter.SetParameterMap(ParamMap)
+#     # Register the 3D images:
+#     elastixImageFilter.Execute()
+#     # Get the registered image:
+#     RegIm = elastixImageFilter.GetResultImage()
+#     RegIm_array = sitk.GetArrayFromImage(RegIm)
+#     return RegIm_array
 
 
 def _image_aug_reg(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45):
@@ -76,7 +76,8 @@ def _image_aug_reg(pic, angle, centroid_x=23, centroid_y=23, win=16, scale=1.45)
     target = image_aug.copy()
     
     try:
-        image_reg_ = run_elastix(template=template, target=target, ite='1500')
+        # image_reg_ = run_elastix(template=template, target=target, ite='1')
+        image_reg_ = target
     except:
         image_reg_ = target
     image_reg_ = image_reg_[centroid_x-win:centroid_x+win,centroid_y-win:centroid_y+win,:]
